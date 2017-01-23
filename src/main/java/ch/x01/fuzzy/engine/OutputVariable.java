@@ -1,8 +1,5 @@
 package ch.x01.fuzzy.engine;
 
-/**
- * Created by developer on 05.01.17.
- */
 public interface OutputVariable {
 
     /**

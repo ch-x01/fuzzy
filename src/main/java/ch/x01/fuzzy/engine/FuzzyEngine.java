@@ -3,9 +3,6 @@ package ch.x01.fuzzy.engine;
 import ch.x01.fuzzy.parser.RuleParser;
 import ch.x01.fuzzy.parser.SymbolTable;
 
-/**
- * Created by developer on 05.01.17.
- */
 public class FuzzyEngine {
 
     private final static String NEW_LINE = System.getProperty("line.separator");
@@ -57,21 +54,24 @@ public class FuzzyEngine {
     }
 
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("--- Linguistic Variables").append(NEW_LINE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("--- Engine").append(NEW_LINE);
+        sb.append(String.format("number of increments = %s", numOfSteps)).append(NEW_LINE);
+        sb.append(NEW_LINE);
+        sb.append("--- Linguistic Variables").append(NEW_LINE);
         for (LinguisticVariable lv : symbolTable.getLinguisticVariables()) {
-            builder.append(lv.toString()).append(NEW_LINE);
+            sb.append(lv.toString()).append(NEW_LINE);
         }
-        builder.append(NEW_LINE);
-        builder.append("--- Fuzzy Rules").append(NEW_LINE);
-        builder.append(fuzzyRuleSet.toString()).append(NEW_LINE);
+        sb.append(NEW_LINE);
+        sb.append("--- Fuzzy Rules").append(NEW_LINE);
+        sb.append(fuzzyRuleSet.toString()).append(NEW_LINE);
 
-        return builder.toString();
+        return sb.toString();
     }
 
     public String getResult() {
-        return String.format("%s.input = %1.4f -> %s.output = %1.4f", inputVariable.getName(), inputVariable
-                .getInputValue(), outputVariable.getName(), outputVariable.getOutputValue());
+        return String.format("%s.input = %.4f -> %s.output = %.4f", inputVariable.getName(), inputVariable.getInputValue(),
+                             outputVariable.getName(), outputVariable.getOutputValue());
     }
 
     public RuleParser getRuleParser() {

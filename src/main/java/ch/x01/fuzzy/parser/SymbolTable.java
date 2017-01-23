@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SymbolTable {
 
-    private Map<String, LinguisticVariable> symbols = new HashMap<>();
+    private final Map<String, LinguisticVariable> symbols = new HashMap<>();
 
     /**
      * Registers a linguistic variable by its name.

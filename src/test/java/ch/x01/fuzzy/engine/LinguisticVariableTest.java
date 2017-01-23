@@ -11,11 +11,10 @@ public class LinguisticVariableTest {
 
     private LinguisticVariable carSpeed;
     private LinguisticVariable brakeForce;
-    private SymbolTable symbolTable;
 
     @Before
     public void setUp() throws Exception {
-        symbolTable = new SymbolTable();
+        SymbolTable symbolTable = new SymbolTable();
 
         // define linguistic variable 'car speed'
         this.carSpeed = new LinguisticVariable("carSpeed", symbolTable);

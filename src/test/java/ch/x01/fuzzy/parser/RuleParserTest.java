@@ -325,9 +325,9 @@ public class RuleParserTest {
         parser.parse(rule);
         assertTrue(rule.getStatus() == FuzzyRuleStatus.ERRONEOUS);
         assertTrue(rule.getParsingError().equals("Symbol 'moderate' is not defined"));
-//        System.out.println(rule.getTokens());
-//        System.out.println("Status: " + rule.getStatus());
-//        System.out.println("Error: " + rule.getParsingError());
+        //        System.out.println(rule.getTokens());
+        //        System.out.println("Status: " + rule.getStatus());
+        //        System.out.println("Error: " + rule.getParsingError());
 
     }
 

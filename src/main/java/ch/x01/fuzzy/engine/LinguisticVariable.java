@@ -21,14 +21,13 @@ import java.util.Map;
  */
 public class LinguisticVariable implements InputVariable, OutputVariable {
 
-    private static Logger logger = LoggerFactory.getLogger(LinguisticVariable.class);
+    private static final Logger logger = LoggerFactory.getLogger(LinguisticVariable.class);
 
     private final String name;
+    private final Map<String, MembershipFunction> termSet = new HashMap<>();
 
     private double inputValue;
     private double outputValue;
-
-    private Map<String, MembershipFunction> termSet = new HashMap<>();
 
     /**
      * Constructs a linguistic variable and registers it with the symbol table.
@@ -51,7 +50,10 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     }
 
     /**
-     * Returns the computed output value for this linguistic variable in case this linguistic variable is part of a rule's conclusion.
+     * Returns the computed output value for this linguistic variable.
+     * <p>
+     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
+     * </p>
      *
      * @return output value
      */
@@ -59,8 +61,19 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
         return outputValue;
     }
 
-    public void setOutputValue(double outputValue) {
-        this.outputValue = outputValue;
+    /**
+     * Sets a crisp output value for this linguistic variable.
+     * <p>
+     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
+     * </p>
+     *
+     * @param value the output value
+     */
+    public void setOutputValue(double value) {
+        this.outputValue = value;
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Set crisp output value = %.4f for linguistic variable \"%s\".", this.outputValue, this.name));
+        }
     }
 
     /**
@@ -75,13 +88,12 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     /**
      * Sets a crisp input value for this linguistic variable.
      *
-     * @param value input
+     * @param value the input value
      */
     public void setInputValue(double value) {
         this.inputValue = value;
-        if (logger.isTraceEnabled()) {
-            logger.trace(
-                    String.format("Set crisp input value=%1$1.4f for linguistic variable \"%2$s\".", value, this.name));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Set crisp input value = %.4f for linguistic variable \"%s\".", this.inputValue, this.name));
         }
     }
 
@@ -95,7 +107,7 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
         if (!this.termSet.containsKey(name.toLowerCase())) {
             this.termSet.put(name.toLowerCase(), mf);
         } else {
-            logger.warn(String.format(
+            throw new FuzzyEngineException(String.format(
                     "Cannot add term \"%1$s\" because it is already a member of the term set of linguistic variable \"%2$s\".",
                     name, this.name));
         }

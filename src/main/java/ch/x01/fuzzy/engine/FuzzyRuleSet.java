@@ -8,9 +8,9 @@ import java.util.*;
 
 public class FuzzyRuleSet {
 
-    private static Logger logger = LoggerFactory.getLogger(FuzzyRuleSet.class);
+    private static final Logger logger = LoggerFactory.getLogger(FuzzyRuleSet.class);
 
-    private Set<FuzzyRule> rules = new HashSet<>();
+    private final Set<FuzzyRule> rules = new HashSet<>();
 
     public FuzzyRuleSet() {
     }
@@ -28,18 +28,6 @@ public class FuzzyRuleSet {
     }
 
     /**
-     * Removes the specified rule from this set if it is present.
-     *
-     * @param rule the fuzzy rule to remove
-     */
-    public void removeRule(FuzzyRule rule) {
-        if (!this.rules.remove(rule)) {
-            logger.warn(String.format("Cannot remove rule \"%s\" from the rule set because it is not present.",
-                                      rule.getRuleText()));
-        }
-    }
-
-    /**
      * Returns all rules of this set.
      *
      * @return fuzzy rules contained in this set
@@ -52,10 +40,6 @@ public class FuzzyRuleSet {
         for (FuzzyRule rule : this.rules) {
             if (rule.getStatus() == FuzzyRuleStatus.IDLE) {
                 parser.parse(rule);
-                if (logger.isTraceEnabled()) {
-                    logger.trace(String.format("parsed rule \"%s\"", rule.getRuleText()));
-                    logger.trace("parsing status=" + rule.getStatus() + ", parsing error: " + rule.getParsingError());
-                }
             }
         }
     }
@@ -67,33 +51,30 @@ public class FuzzyRuleSet {
     public double evaluateRules(int numOfSteps) {
         double result;
 
-        Deque<Double> degreeOfRelevances = new ArrayDeque<>();// pronounced "deck"
-        List<MembershipFunction> conclusions = new ArrayList<>();
-
-        if (getStatus() == FuzzyRuleStatus.DONE) {
-            for (FuzzyRule rule : this.rules) {
-                // compute degree of relevance (H)
-                degreeOfRelevances.add(rule.computeDegreeOfRelevance());
-                // compute conclusion
-                conclusions.add(rule.computeConclusion(degreeOfRelevances.getLast()));
-            }
-            // compute superposition
-            MembershipFunction[] cs = new MembershipFunction[this.rules.size()];
-            double[][] superposition = MembershipFunction.computeSuperposition(conclusions.toArray(cs), numOfSteps);
-            // defuzzify using center of mass approach
-            result = MembershipFunction.computeCenterOfMass(superposition);
-        } else {
-            throw new RuntimeException(
-                    String.format("Cannot evaluateRules rule set because its status is \"%s\".", getStatus()));
+        if (getStatus() != FuzzyRuleStatus.DONE) {
+            throw new FuzzyEngineException(String.format("Cannot evaluate rule set because its status is \"%s\".", getStatus()));
         }
+
+        // compute conclusions
+        List<MembershipFunction> conclusions = new ArrayList<>();
+        for (FuzzyRule rule : this.rules) {
+            conclusions.add(rule.computeConclusion());
+        }
+
+        // compute superposition
+        MembershipFunction[] cs = new MembershipFunction[this.rules.size()];
+        double[][] superposition = MembershipFunction.computeSuperposition(conclusions.toArray(cs), numOfSteps);
+
+        // defuzzify using center of mass approach
+        result = MembershipFunction.computeCenterOfMass(superposition);
+
         return result;
     }
 
     public FuzzyRuleStatus getStatus() {
         FuzzyRuleStatus result = FuzzyRuleStatus.DONE;
         for (FuzzyRule rule : this.rules) {
-            result = (result == FuzzyRuleStatus.ERRONEOUS || result == FuzzyRuleStatus.IDLE) ? result : rule
-                    .getStatus();
+            result = (result == FuzzyRuleStatus.ERRONEOUS || result == FuzzyRuleStatus.IDLE) ? result : rule.getStatus();
         }
         return result;
     }
