@@ -34,14 +34,16 @@ public class FuzzyEngineTest {
         // set a crisp input value for carSpeed
         carSpeed.setInputValue(70);
 
-        // evaluateRules rules
+        // evaluate rules
         engine.evaluateRules();
 
         // print status info
         System.out.println(engine.toString());
 
+        // test output value
         assertEquals(65.9939, brakeForce.getOutputValue(), 0.01);
 
+        // compute output values for a range of input values
         for (int i = 0; i < 50; ++i) {
             double speed = 20 + i * (120.0 / 50);
             engine.evaluateRules(speed);
@@ -88,5 +90,35 @@ public class FuzzyEngineTest {
             System.out.println(engine.getResult());
         }
 
+    }
+
+    @Test
+    public void testDimmerBug() throws Exception {
+        FuzzyEngine engine = new FuzzyEngine(10);
+
+        InputVariable ambient = engine.addInputVariable("Ambient");
+        ambient.addTerm("DARK", new MembershipFunction(0.00, 0.25, 0.50));
+        ambient.addTerm("MEDIUM", new MembershipFunction(0.25, 0.50, 0.75));
+        ambient.addTerm("BRIGHT", new MembershipFunction(0.50, 0.75, 1.00));
+
+        OutputVariable power = engine.addOutputVariable("Power");
+        power.addTerm("LOW", new MembershipFunction(0.00, 0.25, 0.50));
+        power.addTerm("MEDIUM", new MembershipFunction(0.25, 0.50, 0.75));
+        power.addTerm("HIGH", new MembershipFunction(0.50, 0.75, 1.00));
+
+        FuzzyRuleSet ruleSet = engine.addRuleSet();
+        ruleSet.addRule(FuzzyRule.parse("if Ambient is DARK then Power is HIGH", engine));
+        ruleSet.addRule(FuzzyRule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
+        ruleSet.addRule(FuzzyRule.parse("if Ambient is BRIGHT then Power is LOW", engine));
+
+        ambient.setInputValue(0.50);
+
+        engine.evaluateRules();
+
+        System.out.println(engine.toString());
+
+        System.out.println(engine.getResult());
+
+        assertEquals(0.49, power.getOutputValue(), 0.01);
     }
 }

@@ -1,5 +1,5 @@
-## Fuzzy Logic Controller in Java
-A simple and lightweight fuzzy logic controller developed in Java 8 without utilising any third party library published under the MIT licence.
+## Fuzzy Logic Engine
+A simple and lightweight fuzzy logic engine written in Java without utilising any third party library published under the MIT licence.
 Currently, the binary size of the JAR file is **less than 40 KB**.
 
 ### Features
@@ -22,7 +22,7 @@ public class FuzzyEngineTest {
      */
     @Test
     public void testCar() {
-        FuzzyEngine engine = new FuzzyEngine(100);
+        FuzzyEngine engine = new FuzzyEngine();
 
         // define input variable 'car speed'
         InputVariable carSpeed = engine.addInputVariable("carSpeed");
@@ -42,14 +42,16 @@ public class FuzzyEngineTest {
         // set a crisp input value for carSpeed
         carSpeed.setInputValue(70);
 
-        // evaluateRules rules
+        // evaluate rules
         engine.evaluateRules();
 
         // print status info
         System.out.println(engine.toString());
 
+        // test output value
         assertEquals(65.9939, brakeForce.getOutputValue(), 0.01);
 
+        // compute output values for a range of input values
         for (int i = 0; i < 50; ++i) {
             double speed = 20 + i * (120.0 / 50);
             engine.evaluateRules(speed);

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class implements the concept of a linguistic variable. Linguistic variables take on values
@@ -21,14 +22,13 @@ import java.util.Map;
  */
 public class LinguisticVariable implements InputVariable, OutputVariable {
 
-    private static Logger logger = LoggerFactory.getLogger(LinguisticVariable.class);
+    private static final Logger logger = LoggerFactory.getLogger(LinguisticVariable.class);
 
     private final String name;
+    private final Map<String, MembershipFunction> termSet = new HashMap<>();
 
     private double inputValue;
     private double outputValue;
-
-    private Map<String, MembershipFunction> termSet = new HashMap<>();
 
     /**
      * Constructs a linguistic variable and registers it with the symbol table.
@@ -38,7 +38,22 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      */
     public LinguisticVariable(String name, SymbolTable symbolTable) {
         this.name = name.toLowerCase();
-        symbolTable.register(this);
+        symbolTable.registerLV(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LinguisticVariable that = (LinguisticVariable) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     /**
@@ -51,7 +66,10 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     }
 
     /**
-     * Returns the computed output value for this linguistic variable in case this linguistic variable is part of a rule's conclusion.
+     * Returns the computed output value for this linguistic variable.
+     * <p>
+     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
+     * </p>
      *
      * @return output value
      */
@@ -59,8 +77,19 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
         return outputValue;
     }
 
-    public void setOutputValue(double outputValue) {
-        this.outputValue = outputValue;
+    /**
+     * Sets a crisp output value for this linguistic variable.
+     * <p>
+     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
+     * </p>
+     *
+     * @param value the output value
+     */
+    public void setOutputValue(double value) {
+        this.outputValue = value;
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Set crisp output value = %.4f for linguistic variable \"%s\".", this.outputValue, this.name));
+        }
     }
 
     /**
@@ -75,13 +104,12 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     /**
      * Sets a crisp input value for this linguistic variable.
      *
-     * @param value input
+     * @param value the input value
      */
     public void setInputValue(double value) {
         this.inputValue = value;
-        if (logger.isTraceEnabled()) {
-            logger.trace(
-                    String.format("Set crisp input value=%1$1.4f for linguistic variable \"%2$s\".", value, this.name));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Set crisp input value = %.4f for linguistic variable \"%s\".", this.inputValue, this.name));
         }
     }
 
@@ -92,12 +120,13 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      * @param mf   the associated membership function
      */
     public void addTerm(String name, MembershipFunction mf) {
-        if (!this.termSet.containsKey(name.toLowerCase())) {
-            this.termSet.put(name.toLowerCase(), mf);
+        String term = name.toLowerCase();
+        if (!this.termSet.containsKey(term)) {
+            this.termSet.put(term, mf);
         } else {
             logger.warn(String.format(
-                    "Cannot add term \"%1$s\" because it is already a member of the term set of linguistic variable \"%2$s\".",
-                    name, this.name));
+                    "Cannot add linguistic term \"%s\" because it is already a member of the term set of linguistic variable \"%s\".",
+                    term, this.name));
         }
     }
 
@@ -109,15 +138,16 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      * if fuzzification is not possible.
      */
     public double is(String name) {
-        double result = -1;
+        double result;
 
-        if (containsTerm(name)) {
-            MembershipFunction mf = getMembershipFunction(name);
+        String term = name.toLowerCase();
+        if (this.termSet.containsKey(term)) {
+            MembershipFunction mf = this.termSet.get(term);
             result = mf.fuzzify(this.inputValue);
         } else {
-            logger.warn(String.format(
-                    "Cannot compute fuzzification for term \"%1$s\" because it is not a member of the term set of linguistic variable \"%2$s\".",
-                    name, this.name));
+            throw new FuzzyEngineException(String.format(
+                    "Cannot compute fuzzification for linguistic term \"%s\" because it is not a member of the term set of linguistic variable \"%s\".",
+                    term, this.name));
         }
 
         return result;
@@ -130,7 +160,19 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      * @return the associated membership function
      */
     public MembershipFunction getMembershipFunction(String name) {
-        return this.termSet.get(name.toLowerCase());
+        MembershipFunction mf;
+
+        String term = name.toLowerCase();
+        if (this.termSet.containsKey(term)) {
+            mf = this.termSet.get(term);
+        } else {
+            throw new FuzzyEngineException(
+                    String.format(
+                            "Cannot retrieve membership function because linguistic term \"%s\" is not a member of the term set of linguistic variable \"%s\".",
+                            term, this.name));
+        }
+
+        return mf;
     }
 
     public boolean containsTerm(String name) {
@@ -140,12 +182,15 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+
         for (Iterator<String> it = this.termSet.keySet().iterator(); it.hasNext(); ) {
             builder.append(it.next());
             if (it.hasNext()) {
                 builder.append(", ");
             }
         }
+
         return "T(" + this.name + ") = {" + builder.toString() + "}";
     }
+
 }

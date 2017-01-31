@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SymbolTable {
 
-    private Map<String, LinguisticVariable> symbols = new HashMap<>();
+    private final Map<String, LinguisticVariable> symbols = new HashMap<>();
 
     /**
      * Registers a linguistic variable by its name.
@@ -17,23 +17,23 @@ public class SymbolTable {
      * @param v the linguistic variable
      * @return true if the linguistic variable was registered
      */
-    public boolean register(LinguisticVariable v) {
+    public boolean registerLV(LinguisticVariable v) {
         boolean result = false;
-        if (!this.symbols.containsKey(v.getName().toLowerCase())) {
-            this.symbols.put(v.getName().toLowerCase(), v);
+        if (!this.symbols.containsKey(v.getName())) {
+            this.symbols.put(v.getName(), v);
             result = true;
         }
         return result;
     }
 
     public boolean validateLV(String name) {
-        return this.symbols.containsKey(name.toLowerCase());
+        return this.symbols.containsKey(name);
     }
 
     public boolean validateLT(String nameLV, String nameLT) {
         boolean result = false;
-        if (this.symbols.containsKey(nameLV.toLowerCase())) {
-            LinguisticVariable lv = this.symbols.get(nameLV.toLowerCase());
+        if (this.symbols.containsKey(nameLV)) {
+            LinguisticVariable lv = this.symbols.get(nameLV);
             result = lv.containsTerm(nameLT);
         }
         return result;
@@ -46,7 +46,7 @@ public class SymbolTable {
      * @param name the name of the linguistic variable
      * @return the linguistic variable
      */
-    public LinguisticVariable get(String name) {
+    public LinguisticVariable getLV(String name) {
         return this.symbols.get(name.toLowerCase());
     }
 

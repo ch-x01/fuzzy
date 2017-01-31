@@ -9,7 +9,7 @@ public class RuleScannerTest {
     @Test
     public void testScanner() {
         RuleScanner scanner = new RuleScanner("if (carSpeed is low) then (brakeForce is moderate)");
-        Token token = null;
+        Token token;
         while (scanner.hasMoreTokens()) {
             try {
                 token = scanner.nextToken();

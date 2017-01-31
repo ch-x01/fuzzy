@@ -11,11 +11,10 @@ public class LinguisticVariableTest {
 
     private LinguisticVariable carSpeed;
     private LinguisticVariable brakeForce;
-    private SymbolTable symbolTable;
 
     @Before
     public void setUp() throws Exception {
-        symbolTable = new SymbolTable();
+        SymbolTable symbolTable = new SymbolTable();
 
         // define linguistic variable 'car speed'
         this.carSpeed = new LinguisticVariable("carSpeed", symbolTable);
@@ -57,7 +56,7 @@ public class LinguisticVariableTest {
         assertTrue(fuzzy == 0.0);
     }
 
-    @Test
+    @Test(expected = FuzzyEngineException.class)
     public final void testIsUndefinedTerm() {
         this.carSpeed.setInputValue(120);
         double fuzzy = this.carSpeed.is("fast");

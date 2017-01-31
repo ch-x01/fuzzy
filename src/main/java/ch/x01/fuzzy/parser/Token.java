@@ -1,8 +1,5 @@
 package ch.x01.fuzzy.parser;
 
-/**
- * Created by developer on 04.01.17.
- */
 public enum Token {
     IF {
         boolean isKeyword(String expression) {

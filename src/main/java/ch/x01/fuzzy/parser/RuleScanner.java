@@ -12,11 +12,12 @@ public class RuleScanner {
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
     private static final char[] NUMBERS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
+    private final char[] expression;
+    private final LinkedList<String> identifiers = new LinkedList<>();
+
     private char ch = STX;
     private ScannerState currentState;
-    private char[] expression;
     private int index;
-    private LinkedList<String> identifiers = new LinkedList<>();
 
     public RuleScanner(String expression) {
         this.expression = expression.trim().toLowerCase().toCharArray();

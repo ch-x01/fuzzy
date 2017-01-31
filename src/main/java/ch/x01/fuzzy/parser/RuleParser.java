@@ -2,6 +2,8 @@ package ch.x01.fuzzy.parser;
 
 import ch.x01.fuzzy.engine.FuzzyRule;
 import ch.x01.fuzzy.engine.FuzzyRuleStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Stack;
 
@@ -33,15 +35,15 @@ import java.util.Stack;
  */
 public class RuleParser {
 
+    private static final Logger logger = LoggerFactory.getLogger(RuleParser.class);
+
+    private final Stack<Token> opDelayStack = new Stack<>();
+    private final SymbolTable symbolTable;
+
     private Token token;
     private RuleScanner ruleScanner;
-
     private FuzzyRule fuzzyRule;
-
     private Stack<String> stack;
-    private Stack<Token> opDelayStack = new Stack<>();
-
-    private SymbolTable symbolTable;
 
     /**
      * Constructor
@@ -58,6 +60,7 @@ public class RuleParser {
      * result linguistic variables used within rules are not validated.
      */
     public RuleParser() {
+        symbolTable = null;
     }
 
     private void get(Token token) throws IllegalNameException {
@@ -182,6 +185,10 @@ public class RuleParser {
         fuzzyRule = rule;
         ruleScanner = new RuleScanner(fuzzyRule.getRuleText());
         parseRule();
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Parsed rule \"%s\".", rule.getRuleText()));
+            logger.debug(String.format("parsing status = %s,  parsing error: %s", rule.getStatus(), rule.getParsingError()));
+        }
     }
 
 }

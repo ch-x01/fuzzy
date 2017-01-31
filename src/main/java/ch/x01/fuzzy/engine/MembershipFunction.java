@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MembershipFunction {
 
-    private static Logger logger = LoggerFactory.getLogger(MembershipFunction.class);
+    private static final Logger logger = LoggerFactory.getLogger(MembershipFunction.class);
 
     private final double start;
     private final double left_top;
@@ -28,7 +28,7 @@ public class MembershipFunction {
      * @param end       end point of trapezoid
      * @param height    height of trapezoid
      */
-    public MembershipFunction(double start, double left_top, double right_top, double end, double height) {
+    private MembershipFunction(double start, double left_top, double right_top, double end, double height) {
         this.start = start;
         this.left_top = left_top;
         this.right_top = right_top;
@@ -74,42 +74,50 @@ public class MembershipFunction {
     public static double[][] computeSuperposition(MembershipFunction[] membershipFunctions, int numOfSteps) {
         double[][] result = new double[2][numOfSteps + 1];
 
-        if (membershipFunctions.length >= 2) {
-            double minSupport = 0.0;
-            double maxSupport = 0.0;
+        if (membershipFunctions.length < 2) {
+            throw new FuzzyEngineException("Cannot compute superposition for less than two membership functions.");
+        }
 
-            for (MembershipFunction mf : membershipFunctions) {
-                // determine max and min support values
-                if (mf.start < minSupport) {
-                    minSupport = mf.start;
-                }
-                if (mf.end > maxSupport) {
-                    maxSupport = mf.end;
-                }
+        double minSupport = 0.0;
+        double maxSupport = 0.0;
+
+        for (MembershipFunction mf : membershipFunctions) {
+            // determine max and min support values
+            if (mf.start < minSupport) {
+                minSupport = mf.start;
             }
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("--- superposition");
+            if (mf.end > maxSupport) {
+                maxSupport = mf.end;
             }
+        }
 
-            double[][] du = membershipFunctions[0].plot(minSupport, maxSupport, numOfSteps);
-            for (int k = 1; k < membershipFunctions.length; k++) {
-                double[][] dk = membershipFunctions[k].plot(minSupport, maxSupport, numOfSteps);
-                for (int i = 0; i < numOfSteps + 1; i++) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(String.format("Superposition is computed from %.2f to %.2f", minSupport, maxSupport));
+        }
+
+        double[][] du = membershipFunctions[0].plot(minSupport, maxSupport, numOfSteps);
+        for (int k = 1; k < membershipFunctions.length; k++) {
+            double[][] dk = membershipFunctions[k].plot(minSupport, maxSupport, numOfSteps);
+            for (int i = 0; i < numOfSteps + 1; i++) {
+                if (k == 1) {
+                    // compute superposition of the first two membership functions
                     result[0][i] = du[0][i];
                     result[1][i] = Math.max(du[1][i], dk[1][i]);
+                } else {
+                    result[1][i] = Math.max(result[1][i], dk[1][i]);
                 }
             }
+        }
 
-            if (logger.isTraceEnabled()) {
-                String[] label = new String[]{"x -->", "y -->"};
-                for (int row = 0; row < result.length; row++) {
-                    StringBuilder builder = new StringBuilder(label[row]);
-                    for (int col = 0; col < result[row].length; col++) {
-                        builder.append(String.format("%12.4f", result[row][col]));
-                    }
-                    logger.trace(builder.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("--- superposition");
+            String[] label = new String[]{"x -->", "y -->"};
+            for (int row = 0; row < result.length; row++) {
+                StringBuilder sb = new StringBuilder(label[row]);
+                for (int col = 0; col < result[row].length; col++) {
+                    sb.append(String.format("%12.4f", result[row][col]));
                 }
+                logger.debug(sb.toString());
             }
         }
 
@@ -142,21 +150,21 @@ public class MembershipFunction {
             double Ai = 0.5 * (y1 + y2) * (x2 - x1);
 
             if (logger.isTraceEnabled()) {
-                logger.trace(String.format("xsi = %1.4f", xsi));
-                logger.trace(String.format("Ai  = %1.4f", Ai));
+                logger.trace(String.format("xsi = %.4f", xsi));
+                logger.trace(String.format("Ai  = %.4f", Ai));
             }
 
             sumNumerator += (xsi * Ai);
             sumDenominator += Ai;
 
             if (logger.isTraceEnabled()) {
-                logger.trace(String.format("sum(xsi * Ai) = %1.4f", sumNumerator));
-                logger.trace(String.format("sum(Ai)       = %1.4f", sumDenominator));
+                logger.trace(String.format("sum(xsi * Ai) = %.4f", sumNumerator));
+                logger.trace(String.format("sum(Ai)       = %.4f", sumDenominator));
             }
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace(String.format("CoM = %1.4f", sumNumerator / sumDenominator));
+            logger.trace(String.format("CoM = %.4f", sumNumerator / sumDenominator));
         }
 
         return sumNumerator / sumDenominator;
@@ -192,9 +200,17 @@ public class MembershipFunction {
     }
 
     public MembershipFunction computeReasoning(double degreeOfRelevance) {
-        MembershipFunction result = null;
+        MembershipFunction result;
 
-        if (this.height == 1.0) {
+        if (this.height != 1) {
+            throw new FuzzyEngineException(
+                    String.format("Cannot compute reasoning because the membership function %s was reasoned already", this.toString()));
+        }
+
+        if (degreeOfRelevance == 0) {
+            // return a zero function
+            result = new MembershipFunction(0, 0, 0, 0, 0);
+        } else {
             double left_top = degreeOfRelevance * (this.left_top - this.start) + this.start;
             double right_top = this.end - degreeOfRelevance * (this.end - this.right_top);
             result = new MembershipFunction(this.start, left_top, right_top, this.end, degreeOfRelevance);
@@ -217,18 +233,34 @@ public class MembershipFunction {
 
         double increment = Math.abs((to - from) / numOfSteps);
 
-        if (logger.isTraceEnabled()) {
-            logger.trace(String.format("discretisation: from=%1$1.4f to=%2$1.4f, numOfSteps=%3$d, increment=%4$1.4f", from, to, numOfSteps,
-                    increment));
-        }
-
         for (int i = 0; i < numOfSteps + 1; i++) {
             double x = from + increment * i;
             result[0][i] = x;
             result[1][i] = fuzzify(x);
         }
 
+        if (logger.isTraceEnabled()) {
+            logger.trace(String.format("--- discretisation of %s", this.toString()));
+            logger.trace(String.format("from %.4f to %.4f | increment = %.4f | numOfSteps = %s", from, to, increment, numOfSteps));
+            String[] label = new String[]{"x -->", "y -->"};
+            for (int row = 0; row < result.length; row++) {
+                StringBuilder builder = new StringBuilder(label[row]);
+                for (int col = 0; col < result[row].length; col++) {
+                    builder.append(String.format("%12.4f", result[row][col]));
+                }
+                logger.trace(builder.toString());
+            }
+        }
+
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format("MF { start = %.2f, ", start) +
+                String.format("left_top = %.2f, ", left_top) +
+                String.format("right_top = %.2f, ", right_top) +
+                String.format("end = %.2f, ", end) +
+                String.format("height = %.2f }", height);
+    }
 }
