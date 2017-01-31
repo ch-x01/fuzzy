@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class implements the concept of a linguistic variable. Linguistic variables take on values
@@ -37,7 +38,22 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      */
     public LinguisticVariable(String name, SymbolTable symbolTable) {
         this.name = name.toLowerCase();
-        symbolTable.register(this);
+        symbolTable.registerLV(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LinguisticVariable that = (LinguisticVariable) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     /**
@@ -104,12 +120,13 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      * @param mf   the associated membership function
      */
     public void addTerm(String name, MembershipFunction mf) {
-        if (!this.termSet.containsKey(name.toLowerCase())) {
-            this.termSet.put(name.toLowerCase(), mf);
+        String term = name.toLowerCase();
+        if (!this.termSet.containsKey(term)) {
+            this.termSet.put(term, mf);
         } else {
-            throw new FuzzyEngineException(String.format(
-                    "Cannot add term \"%1$s\" because it is already a member of the term set of linguistic variable \"%2$s\".",
-                    name, this.name));
+            logger.warn(String.format(
+                    "Cannot add linguistic term \"%s\" because it is already a member of the term set of linguistic variable \"%s\".",
+                    term, this.name));
         }
     }
 
@@ -121,15 +138,16 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      * if fuzzification is not possible.
      */
     public double is(String name) {
-        double result = -1;
+        double result;
 
-        if (containsTerm(name)) {
-            MembershipFunction mf = getMembershipFunction(name);
+        String term = name.toLowerCase();
+        if (this.termSet.containsKey(term)) {
+            MembershipFunction mf = this.termSet.get(term);
             result = mf.fuzzify(this.inputValue);
         } else {
-            logger.warn(String.format(
-                    "Cannot compute fuzzification for term \"%1$s\" because it is not a member of the term set of linguistic variable \"%2$s\".",
-                    name, this.name));
+            throw new FuzzyEngineException(String.format(
+                    "Cannot compute fuzzification for linguistic term \"%s\" because it is not a member of the term set of linguistic variable \"%s\".",
+                    term, this.name));
         }
 
         return result;
@@ -142,7 +160,19 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
      * @return the associated membership function
      */
     public MembershipFunction getMembershipFunction(String name) {
-        return this.termSet.get(name.toLowerCase());
+        MembershipFunction mf;
+
+        String term = name.toLowerCase();
+        if (this.termSet.containsKey(term)) {
+            mf = this.termSet.get(term);
+        } else {
+            throw new FuzzyEngineException(
+                    String.format(
+                            "Cannot retrieve membership function because linguistic term \"%s\" is not a member of the term set of linguistic variable \"%s\".",
+                            term, this.name));
+        }
+
+        return mf;
     }
 
     public boolean containsTerm(String name) {
@@ -152,12 +182,15 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+
         for (Iterator<String> it = this.termSet.keySet().iterator(); it.hasNext(); ) {
             builder.append(it.next());
             if (it.hasNext()) {
                 builder.append(", ");
             }
         }
+
         return "T(" + this.name + ") = {" + builder.toString() + "}";
     }
+
 }

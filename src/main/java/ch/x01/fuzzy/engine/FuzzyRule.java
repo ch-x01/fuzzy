@@ -48,7 +48,7 @@ public class FuzzyRule {
      * @param symbolTable the table where linguistic variables and its terms are registered
      */
     public FuzzyRule(String ruleText, SymbolTable symbolTable) {
-        this.ruleText = ruleText;
+        this.ruleText = ruleText.toLowerCase();
         this.symbolTable = symbolTable;
     }
 
@@ -80,38 +80,41 @@ public class FuzzyRule {
      * @return <i>degree of relevance (H)</i>
      */
     public double computeDegreeOfRelevance() {
-        double result = 0;
+        double result;
 
-        if (status == FuzzyRuleStatus.DONE) {
-            Stack<Double> stack = new Stack<>();
+        if (status != FuzzyRuleStatus.DONE) {
+            throw new FuzzyEngineException(
+                    String.format("Cannot compute degree of relevance of rule \"%s\" because its status is \"%s\".", ruleText,
+                                  status));
+        }
 
-            for (int i = 0; i < premises.size(); i++) {
-                String token = premises.get(i);
+        Stack<Double> stack = new Stack<>();
 
-                if (token.equals(Token.IS.toString())) {
-                    LinguisticVariable lv = symbolTable.get(premises.get(i - 2));
-                    stack.push(lv.is(premises.get(i - 1)));
-                }
+        for (int i = 0; i < premises.size(); i++) {
+            String token = premises.get(i);
 
-                if (token.equals(Token.AND.toString())) {
-                    Double operand2 = stack.pop();
-                    Double operand1 = stack.pop();
-                    stack.push(Math.min(operand1, operand2));
-                }
+            if (token.equals(Token.IS.toString())) {
+                LinguisticVariable lv = symbolTable.getLV(premises.get(i - 2));
+                stack.push(lv.is(premises.get(i - 1)));
+            }
 
-                if (token.equals(Token.OR.toString())) {
-                    Double operand2 = stack.pop();
-                    Double operand1 = stack.pop();
-                    stack.push(Math.max(operand1, operand2));
-                }
-            } // for
+            if (token.equals(Token.AND.toString())) {
+                Double operand2 = stack.pop();
+                Double operand1 = stack.pop();
+                stack.push(Math.min(operand1, operand2));
+            }
 
-            result = stack.pop();
+            if (token.equals(Token.OR.toString())) {
+                Double operand2 = stack.pop();
+                Double operand1 = stack.pop();
+                stack.push(Math.max(operand1, operand2));
+            }
+        }
 
-        } // if
+        result = stack.pop();
 
         if (result > 0 && logger.isDebugEnabled()) {
-            logger.debug(String.format("Rule \"%s\" fires. Degree of relevance H = %.4f", this.ruleText, result));
+            logger.debug(String.format("Rule \"%s\" fires. Degree of relevance H = %.4f", ruleText, result));
         }
 
         return result;
@@ -132,14 +135,17 @@ public class FuzzyRule {
      * @return membership function <code>min{H, u<sub>c</sub>(x)}</code>
      */
     public MembershipFunction computeConclusion(double degreeOfRelevance) {
-        MembershipFunction result = null;
+        MembershipFunction result;
 
-        if (status == FuzzyRuleStatus.DONE) {
-            // if the conclusion is '... then y is b' --> conclusion = [y b is]
-            LinguisticVariable lv = symbolTable.get(conclusion.get(0));
-            MembershipFunction mf = lv.getMembershipFunction(conclusion.get(1));
-            result = mf.computeReasoning(degreeOfRelevance);
+        if (status != FuzzyRuleStatus.DONE) {
+            throw new FuzzyEngineException(String.format("Cannot compute conclusion of rule \"%s\" because its status is \"%s\".",
+                                                         ruleText, status));
         }
+
+        // if the conclusion is '... then y is b' --> conclusion = [y b is]
+        LinguisticVariable lv = symbolTable.getLV(conclusion.get(0));
+        MembershipFunction mf = lv.getMembershipFunction(conclusion.get(1));
+        result = mf.computeReasoning(degreeOfRelevance);
 
         return result;
     }

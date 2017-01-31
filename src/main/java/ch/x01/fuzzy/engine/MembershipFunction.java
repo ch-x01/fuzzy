@@ -200,17 +200,20 @@ public class MembershipFunction {
     }
 
     public MembershipFunction computeReasoning(double degreeOfRelevance) {
-        MembershipFunction result = null;
+        MembershipFunction result;
 
-        if (this.height == 1) {
-            if (degreeOfRelevance == 0) {
-                // return a zero function
-                result = new MembershipFunction(0, 0, 0, 0, 0);
-            } else {
-                double left_top = degreeOfRelevance * (this.left_top - this.start) + this.start;
-                double right_top = this.end - degreeOfRelevance * (this.end - this.right_top);
-                result = new MembershipFunction(this.start, left_top, right_top, this.end, degreeOfRelevance);
-            }
+        if (this.height != 1) {
+            throw new FuzzyEngineException(
+                    String.format("Cannot compute reasoning because the membership function %s was reasoned already", this.toString()));
+        }
+
+        if (degreeOfRelevance == 0) {
+            // return a zero function
+            result = new MembershipFunction(0, 0, 0, 0, 0);
+        } else {
+            double left_top = degreeOfRelevance * (this.left_top - this.start) + this.start;
+            double right_top = this.end - degreeOfRelevance * (this.end - this.right_top);
+            result = new MembershipFunction(this.start, left_top, right_top, this.end, degreeOfRelevance);
         }
 
         return result;
