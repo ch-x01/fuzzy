@@ -5,6 +5,8 @@ jdk: oraclejdk8
 script: mvn clean verify
 
 notifications:
-  email: contact.developer@bluewin.ch
-    on_success: change
-    on_failure: always
+ email:
+  recipients:
+   - contact.developer@bluewin.ch
+  on_success: change
+  on_failure: always
