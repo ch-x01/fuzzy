@@ -1,4 +1,4 @@
-## Fuzzy Logic Engine
+## Fuzzy Logic Engine [![Build Status](https://travis-ci.org/ch-x01/fuzzy.svg?branch=master)](https://travis-ci.org/ch-x01/fuzzy)
 A simple and lightweight fuzzy logic engine written in Java without utilising any third party library published under the MIT licence.
 Currently, the binary size of the JAR file is **less than 40 KB**.
 
