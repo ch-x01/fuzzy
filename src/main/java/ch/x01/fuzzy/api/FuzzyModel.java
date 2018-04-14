@@ -79,37 +79,73 @@ public class FuzzyModel {
         interface Term {
         }
 
-        interface Triangle extends Term {
-            static Triangle triangle(String name, double start, double top, double end) {
-                return new LinguisticTerm(name, start, top, end);
-            }
-        }
-
-        interface Trapezoid extends Term {
-            static Trapezoid trapezoid(String name, double start, double left_top, double right_top, double end) {
-                return new LinguisticTerm(name, start, left_top, right_top, end);
-            }
-        }
-
-        private static class LinguisticTerm implements Triangle, Trapezoid {
-
-            private final String name;
-            private final double[] mf;
-
-            private LinguisticTerm(String name, double... values) {
-                this.name = name;
-                this.mf = values;
-            }
-
-            @Override
-            public String toString() {
-                return "LinguisticTerm{" +
-                        "name='" + name + '\'' +
-                        ", mf=" + Arrays.toString(mf) +
-                        '}';
-            }
-        }
-
     }
 
+    public static class LinguisticTerm implements LinguisticVariable.Term { //implements Triangle, Trapezoid {
+
+        private final String name;
+        private final double[] mf;
+
+        private LinguisticTerm(String name, double start, double top, double end) {
+            this.name = name;
+            this.mf = new double[]{start, top, end};
+        }
+
+        private LinguisticTerm(String name, double start, double left_top, double right_top, double end) {
+            this.name = name;
+            this.mf = new double[]{start, left_top, right_top, end};
+        }
+
+        public static TriangleBuilder triangle() {
+            return name -> start -> top -> end -> new LinguisticTerm(name, start, top, end);
+        }
+
+        public static TrapezoidBuilder trapezoid() {
+            return name -> start -> left_top -> right_top -> end -> new LinguisticTerm(name, start, left_top, right_top, end);
+        }
+
+        @Override
+        public String toString() {
+            return "LinguisticTerm{" +
+                    "name='" + name + '\'' +
+                    ", mf=" + Arrays.toString(mf) +
+                    '}';
+        }
+
+        interface TriangleBuilder {
+            TriangleStartBuilder name(String name);
+        }
+
+        interface TriangleStartBuilder {
+            TriangleTopBuilder start(double value);
+        }
+
+        interface TriangleTopBuilder {
+            TriangleEndBuilder top(double value);
+        }
+
+        interface TriangleEndBuilder {
+            LinguisticTerm end(double value);
+        }
+
+        interface TrapezoidBuilder {
+            TrapezoidStartBuilder name(String name);
+        }
+
+        interface TrapezoidStartBuilder {
+            TrapezoidLeftTopBuilder start(double value);
+        }
+
+        interface TrapezoidLeftTopBuilder {
+            TrapezoidRightTopBuilder left_top(double value);
+        }
+
+        interface TrapezoidRightTopBuilder {
+            TrapezoidEndBuilder right_top(double value);
+        }
+
+        interface TrapezoidEndBuilder {
+            LinguisticTerm end(double value);
+        }
+    }
 }
