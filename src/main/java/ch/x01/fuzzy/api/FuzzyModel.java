@@ -2,6 +2,11 @@ package ch.x01.fuzzy.api;
 
 import java.util.Arrays;
 
+/**
+ * This class represents a complete Fuzzy Model with linguistic variables, terms and rules.
+ * The implementation uses the builder pattern with Java 8 lambdas.
+ * See also http://benjiweber.co.uk/blog/2014/11/02/builder-pattern-with-java-8-lambdas/
+ */
 public class FuzzyModel {
 
     private final String name;
