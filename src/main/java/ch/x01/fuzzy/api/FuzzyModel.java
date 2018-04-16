@@ -1,10 +1,12 @@
 package ch.x01.fuzzy.api;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class represents a complete Fuzzy Model with linguistic variables, terms and rules.
- * The implementation uses the builder pattern with Java 8 lambdas.
+ * The implementation utilizes the builder pattern with Java 8 lambdas.
  * See also http://benjiweber.co.uk/blog/2014/11/02/builder-pattern-with-java-8-lambdas/
  */
 public class FuzzyModel {
@@ -30,6 +32,10 @@ public class FuzzyModel {
                 ", vars=" + Arrays.toString(vars) +
                 ", rules=" + Arrays.toString(rules) +
                 '}';
+    }
+
+    public List<LinguisticVariable> getLinguisticVariables() {
+        return new ArrayList<>(Arrays.asList(vars));
     }
 
     interface FuzzyModelBuilder {
@@ -69,6 +75,14 @@ public class FuzzyModel {
                     '}';
         }
 
+        public String getName() {
+            return name;
+        }
+
+        public List<Term> getTerms() {
+            return new ArrayList<>(Arrays.asList(terms));
+        }
+
         interface LinguisticVariableBuilder {
             NameBuilder usage(String usage);
         }
@@ -81,40 +95,62 @@ public class FuzzyModel {
             LinguisticVariable terms(Term... term);
         }
 
-        interface Term {
-        }
-
     }
 
-    public static class LinguisticTerm implements LinguisticVariable.Term { //implements Triangle, Trapezoid {
+    public static class Term {
 
         private final String name;
-        private final double[] mf;
+        private final double start;
+        private final double left_top;
+        private final double right_top;
+        private final double end;
 
-        private LinguisticTerm(String name, double start, double top, double end) {
-            this.name = name;
-            this.mf = new double[]{start, top, end};
+        private Term(String name, double start, double top, double end) {
+            this(name, start, top, top, end);
         }
 
-        private LinguisticTerm(String name, double start, double left_top, double right_top, double end) {
+        private Term(String name, double start, double left_top, double right_top, double end) {
             this.name = name;
-            this.mf = new double[]{start, left_top, right_top, end};
+            this.start = start;
+            this.left_top = left_top;
+            this.right_top = right_top;
+            this.end = end;
         }
 
         public static TriangleBuilder triangle() {
-            return name -> start -> top -> end -> new LinguisticTerm(name, start, top, end);
+            return name -> start -> top -> end -> new Term(name, start, top, end);
         }
 
         public static TrapezoidBuilder trapezoid() {
-            return name -> start -> left_top -> right_top -> end -> new LinguisticTerm(name, start, left_top, right_top, end);
+            return name -> start -> left_top -> right_top -> end -> new Term(name, start, left_top, right_top, end);
         }
 
         @Override
         public String toString() {
-            return "LinguisticTerm{" +
+            return "Term{" +
                     "name='" + name + '\'' +
-                    ", mf=" + Arrays.toString(mf) +
+                    ", mf=" + Arrays.toString(new double[]{start, left_top, right_top, end}) +
                     '}';
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getStart() {
+            return start;
+        }
+
+        public double getLeft_top() {
+            return left_top;
+        }
+
+        public double getRight_top() {
+            return right_top;
+        }
+
+        public double getEnd() {
+            return end;
         }
 
         interface TriangleBuilder {
@@ -130,7 +166,7 @@ public class FuzzyModel {
         }
 
         interface TriangleEndBuilder {
-            LinguisticTerm end(double value);
+            Term end(double value);
         }
 
         interface TrapezoidBuilder {
@@ -150,7 +186,7 @@ public class FuzzyModel {
         }
 
         interface TrapezoidEndBuilder {
-            LinguisticTerm end(double value);
+            Term end(double value);
         }
     }
 }

@@ -31,6 +31,15 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     private double outputValue;
 
     /**
+     * Constructs a linguistic variable. The constructed variable needs to be registered with the symbol table.
+     *
+     * @param name the name of this linguistic variable
+     */
+    public LinguisticVariable(String name) {
+        this.name = name.toLowerCase();
+    }
+
+    /**
      * Constructs a linguistic variable and registers it with the symbol table.
      *
      * @param name        the name of this linguistic variable
@@ -183,7 +192,8 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        for (Iterator<String> it = this.termSet.keySet().iterator(); it.hasNext(); ) {
+        for (Iterator<String> it = this.termSet.keySet()
+                                               .iterator(); it.hasNext(); ) {
             builder.append(it.next());
             if (it.hasNext()) {
                 builder.append(", ");

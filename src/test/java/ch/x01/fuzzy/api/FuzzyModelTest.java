@@ -2,8 +2,8 @@ package ch.x01.fuzzy.api;
 
 import org.junit.Test;
 
-import static ch.x01.fuzzy.api.FuzzyModel.LinguisticTerm.trapezoid;
-import static ch.x01.fuzzy.api.FuzzyModel.LinguisticTerm.triangle;
+import static ch.x01.fuzzy.api.FuzzyModel.Term.trapezoid;
+import static ch.x01.fuzzy.api.FuzzyModel.Term.triangle;
 import static ch.x01.fuzzy.api.FuzzyModel.LinguisticVariable.lv;
 import static ch.x01.fuzzy.api.FuzzyModel.model;
 
