@@ -38,6 +38,10 @@ public class FuzzyModel {
         return new ArrayList<>(Arrays.asList(vars));
     }
 
+    public List<String> getRules() {
+        return new ArrayList<>(Arrays.asList(rules));
+    }
+
     interface FuzzyModelBuilder {
         VariableBuilder name(String name);
     }
