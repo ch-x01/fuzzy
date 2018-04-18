@@ -1,6 +1,9 @@
 package ch.x01.fuzzy.api;
 
-import ch.x01.fuzzy.engine.*;
+import ch.x01.fuzzy.engine.FuzzyEngineException;
+import ch.x01.fuzzy.engine.FuzzyRule;
+import ch.x01.fuzzy.engine.LinguisticVariable;
+import ch.x01.fuzzy.engine.MembershipFunction;
 import ch.x01.fuzzy.parser.RuleParser;
 import ch.x01.fuzzy.parser.SymbolTable;
 
@@ -27,13 +30,13 @@ public class FuzzyEngine {
 
     public OutputVariable evaluate(InputVariable... input) {
 
+        SymbolTable symbolTable = new SymbolTable();
+
         // === setup engine
 
         if (!isReady) {
-            SymbolTable symbolTable = new SymbolTable();
-
             // create linguistic variables and register them with symbol table
-            for (FuzzyModel.LinguisticVariable var : this.model.getLinguisticVariables()) {
+            for (FuzzyModel.LinguisticVariable var : model.getLinguisticVariables()) {
                 LinguisticVariable lv = new LinguisticVariable(var.getName());
                 for (FuzzyModel.Term term : var.getTerms()) {
                     lv.addTerm(term.getName(),
@@ -65,7 +68,14 @@ public class FuzzyEngine {
         // === compute output value
 
         // set input value(s)
-        //...
+        for (InputVariable var : input) {
+            if (model.isValidInputVariable(var.name)) {
+                LinguisticVariable lv = symbolTable.getLV(var.name);
+                lv.setInputValue(var.value);
+            } else {
+                throw new FuzzyEngineException(String.format("\"%s\" is not a valid input variable.", var.name));
+            }
+        }
 
         // compute conclusions
         List<MembershipFunction> conclusions = new ArrayList<>();
@@ -78,9 +88,10 @@ public class FuzzyEngine {
         double[][] superposition = MembershipFunction.computeSuperposition(conclusions.toArray(cs), numOfSteps);
 
         // defuzzify using center of mass approach
-        double output = MembershipFunction.computeCenterOfMass(superposition);
+        double outputValue = MembershipFunction.computeCenterOfMass(superposition);
 
-        return new OutputVariable("", output);
+        // set output value
+        return new OutputVariable(model.getOutputVariableName(), outputValue);
     }
 
     public static class InputVariable {

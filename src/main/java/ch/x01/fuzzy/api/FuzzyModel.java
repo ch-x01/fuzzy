@@ -3,6 +3,8 @@ package ch.x01.fuzzy.api;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a complete Fuzzy Model with linguistic variables, terms and rules.
@@ -25,6 +27,18 @@ public class FuzzyModel {
         return name -> vars -> rules -> new FuzzyModel(name, vars, rules);
     }
 
+    private static <T> Collector<T, ?, T> singletonCollector() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
+    }
+
     @Override
     public String toString() {
         return "FuzzyModel{" +
@@ -40,6 +54,21 @@ public class FuzzyModel {
 
     public List<String> getRules() {
         return new ArrayList<>(Arrays.asList(rules));
+    }
+
+    public boolean isValidInputVariable(String name) {
+        List<LinguisticVariable> variableList = Arrays.stream(vars)
+                                                      .filter(var -> (var.getName()
+                                                                         .equalsIgnoreCase(name) && "usage".equals(var.getUsage())))
+                                                      .collect(Collectors.toList());
+        return variableList.size() == 1;
+    }
+
+    public String getOutputVariableName() {
+        return Arrays.stream(vars)
+                     .filter(var -> "output".equals(var.getUsage()))
+                     .collect(singletonCollector())
+                     .getName();
     }
 
     interface FuzzyModelBuilder {
@@ -85,6 +114,10 @@ public class FuzzyModel {
 
         public List<Term> getTerms() {
             return new ArrayList<>(Arrays.asList(terms));
+        }
+
+        public String getUsage() {
+            return usage;
         }
 
         interface LinguisticVariableBuilder {
