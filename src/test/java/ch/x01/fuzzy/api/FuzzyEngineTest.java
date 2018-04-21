@@ -98,6 +98,7 @@ public class FuzzyEngineTest {
 
     @Test
     public void testCarTrapezoid() {
+
         FuzzyModel model = model().name("car (trapezoid)")
                                   .vars(lv().usage("input")
                                             .name("carSpeed")
