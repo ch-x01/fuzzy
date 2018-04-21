@@ -1,4 +1,4 @@
-package ch.x01.fuzzy.engine;
+package ch.x01.fuzzy.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

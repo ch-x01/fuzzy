@@ -1,6 +1,6 @@
 package ch.x01.fuzzy.parser;
 
-import ch.x01.fuzzy.engine.LinguisticVariable;
+import ch.x01.fuzzy.core.LinguisticVariable;
 
 import java.util.Collection;
 import java.util.Collections;

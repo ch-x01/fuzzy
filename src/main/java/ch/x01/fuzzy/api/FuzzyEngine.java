@@ -1,9 +1,9 @@
 package ch.x01.fuzzy.api;
 
-import ch.x01.fuzzy.engine.FuzzyEngineException;
-import ch.x01.fuzzy.engine.FuzzyRule;
-import ch.x01.fuzzy.engine.LinguisticVariable;
-import ch.x01.fuzzy.engine.MembershipFunction;
+import ch.x01.fuzzy.core.FuzzyEngineException;
+import ch.x01.fuzzy.core.FuzzyRule;
+import ch.x01.fuzzy.core.LinguisticVariable;
+import ch.x01.fuzzy.core.MembershipFunction;
 import ch.x01.fuzzy.parser.RuleParser;
 import ch.x01.fuzzy.parser.SymbolTable;
 import org.slf4j.Logger;
