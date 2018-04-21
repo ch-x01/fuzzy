@@ -52,7 +52,6 @@ public class FuzzyRule {
         this.symbolTable = symbolTable;
     }
 
-
     /**
      * Computes degree of relevance of this rule.
      * <p>
@@ -195,7 +194,12 @@ public class FuzzyRule {
         return Objects.hash(ruleText);
     }
 
+    @Override
     public String toString() {
-        return ruleText;
+        return "FuzzyRule{" +
+                "ruleText='" + ruleText + '\'' +
+                ", status=" + status +
+                ", parsingError='" + parsingError + '\'' +
+                '}';
     }
 }
