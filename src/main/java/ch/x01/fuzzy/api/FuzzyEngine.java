@@ -17,9 +17,12 @@ public class FuzzyEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(FuzzyEngine.class);
 
+    private static final String formatString = "%s.input = %{padding}.{precision}f -> %s.output = %{padding}.{precision}f";
+
     private final FuzzyModel model;
     private final int numOfSteps;
-    private final HashSet<FuzzyRule> fuzzyRules = new HashSet<>();
+    private HashSet<FuzzyRule> fuzzyRules;
+    private SymbolTable symbolTable;
 
     private boolean isReady;
 
@@ -37,11 +40,13 @@ public class FuzzyEngine {
             logger.debug("Evaluating " + model.toString());
         }
 
-        SymbolTable symbolTable = new SymbolTable();
-
         // === setup engine
 
         if (!isReady) {
+            // invalidate symbol table and fuzzy rules
+            fuzzyRules = new HashSet<>();
+            symbolTable = new SymbolTable();
+
             // create linguistic variables and register them with symbol table
             for (FuzzyModel.LinguisticVariable var : model.getLinguisticVariables()) {
                 LinguisticVariable lv = new LinguisticVariable(var.getName());
@@ -106,6 +111,13 @@ public class FuzzyEngine {
 
         // set output value
         return new OutputVariable(model.getOutputVariableName(), CoM);
+    }
+
+    public String printResult(InputVariable input, OutputVariable output, int padding, int precision) {
+        String str = formatString.replace("{padding}", Integer.toString(padding))
+                                 .replace("{precision}", Integer.toString(precision));
+
+        return String.format(str, input.getName(), input.getValue(), output.getName(), output.getValue());
     }
 
     public static class InputVariable {

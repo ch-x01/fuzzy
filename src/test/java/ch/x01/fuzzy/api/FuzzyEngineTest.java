@@ -58,6 +58,45 @@ public class FuzzyEngineTest {
     }
 
     @Test
+    public void testCarInputValueRange() {
+
+        FuzzyModel model = model().name("car")
+                                  .vars(lv().usage("input")
+                                            .name("carSpeed")
+                                            .terms(triangle().name("low")
+                                                             .start(20)
+                                                             .top(60)
+                                                             .end(100),
+                                                   triangle().name("medium")
+                                                             .start(60)
+                                                             .top(100)
+                                                             .end(140)),
+                                        lv().usage("output")
+                                            .name("brakeForce")
+                                            .terms(triangle().name("moderate")
+                                                             .start(40)
+                                                             .top(60)
+                                                             .end(80),
+                                                   triangle().name("strong")
+                                                             .start(70)
+                                                             .top(85)
+                                                             .end(100)))
+                                  .rules("if carSpeed is low then brakeForce is moderate",
+                                         "if carSpeed is medium then brakeForce is strong");
+
+        FuzzyEngine engine = new FuzzyEngine(model);
+
+        // compute output values for a range of input values
+        for (int i = 0; i < 50; ++i) {
+            double speed = 20 + i * (120.0 / 50);
+            InputVariable input = new InputVariable("carSpeed", speed);
+            OutputVariable output = engine.evaluate(input);
+            System.out.println(engine.printResult(input, output, 6, 2));
+        }
+
+    }
+
+    @Test
     public void testCarTrapezoid() {
         FuzzyModel model = model().name("car (trapezoid)")
                                   .vars(lv().usage("input")
@@ -180,6 +219,54 @@ public class FuzzyEngineTest {
         assertEquals(0.75, output.getValue(), 0.01);
 
         System.out.println(output);
+
+    }
+
+    @Test
+    public void testDimmerInputValueRange() {
+
+        FuzzyModel model = model().name("dimmer")
+                                  .vars(lv().usage("input")
+                                            .name("ambient")
+                                            .terms(triangle().name("dark")
+                                                             .start(0)
+                                                             .top(0.25)
+                                                             .end(0.5),
+                                                   triangle().name("medium")
+                                                             .start(0.25)
+                                                             .top(0.5)
+                                                             .end(0.75),
+                                                   triangle().name("bright")
+                                                             .start(0.5)
+                                                             .top(0.75)
+                                                             .end(1)),
+                                        lv().usage("output")
+                                            .name("power")
+                                            .terms(triangle().name("low")
+                                                             .start(0)
+                                                             .top(0.25)
+                                                             .end(0.5),
+                                                   triangle().name("medium")
+                                                             .start(0.25)
+                                                             .top(0.5)
+                                                             .end(0.75),
+                                                   triangle().name("high")
+                                                             .start(0.5)
+                                                             .top(0.75)
+                                                             .end(1)))
+                                  .rules("if Ambient is DARK then Power is HIGH",
+                                         "if Ambient is MEDIUM then Power is MEDIUM",
+                                         "if Ambient is BRIGHT then Power is LOW");
+
+        FuzzyEngine engine = new FuzzyEngine(model);
+
+        // compute output values for a range of input values
+        for (int i = 0; i < 50; i++) {
+            double light = 0 + i * (1.0 / 50);
+            InputVariable input = new InputVariable("ambient", light);
+            OutputVariable output = engine.evaluate(input);
+            System.out.println(engine.printResult(input, output, 4, 2));
+        }
 
     }
 

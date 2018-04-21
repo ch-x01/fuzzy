@@ -20,16 +20,13 @@ import java.util.Objects;
  * Each linguistic term is associated with a reference fuzzy set, each of which has a defined
  * membership function (MF).
  */
-public class LinguisticVariable {//implements InputVariable, OutputVariable {
+public class LinguisticVariable {
 
     private static final Logger logger = LoggerFactory.getLogger(LinguisticVariable.class);
 
     private final String name;
     private final Map<String, MembershipFunction> termSet = new HashMap<>();
     private double value;
-    // TODO clean up
-    //    private double inputValue;
-    //    private double outputValue;
 
     /**
      * Constructs a linguistic variable. The constructed variable needs to be registered with the symbol table.
@@ -74,55 +71,6 @@ public class LinguisticVariable {//implements InputVariable, OutputVariable {
     public String getName() {
         return this.name;
     }
-
-    // TODO clean up
-    //    /**
-    //     * Returns the computed output value for this linguistic variable.
-    //     * <p>
-    //     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
-    //     * </p>
-    //     *
-    //     * @return output value
-    //     */
-    //    public double getOutputValue() {
-    //        return outputValue;
-    //    }
-    //
-    //    /**
-    //     * Sets a crisp output value for this linguistic variable.
-    //     * <p>
-    //     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
-    //     * </p>
-    //     *
-    //     * @param value the output value
-    //     */
-    //    public void setOutputValue(double value) {
-    //        this.outputValue = value;
-    //        if (logger.isDebugEnabled()) {
-    //            logger.debug(String.format("Set crisp output value = %.4f for linguistic variable \"%s\".", this.outputValue, this.name));
-    //        }
-    //    }
-
-    //    /**
-    //     * Returns the current crisp input value for this linguistic variable.
-    //     *
-    //     * @return current input value
-    //     */
-    //    public double getInputValue() {
-    //        return this.inputValue;
-    //    }
-    //
-    //    /**
-    //     * Sets a crisp input value for this linguistic variable.
-    //     *
-    //     * @param value the input value
-    //     */
-    //    public void setInputValue(double value) {
-    //        this.inputValue = value;
-    //        if (logger.isDebugEnabled()) {
-    //            logger.debug(String.format("Set crisp input value = %.4f for linguistic variable \"%s\".", this.inputValue, this.name));
-    //        }
-    //    }
 
     /**
      * Returns the current crisp value for this linguistic variable.

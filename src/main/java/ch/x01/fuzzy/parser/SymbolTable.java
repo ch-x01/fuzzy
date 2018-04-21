@@ -53,4 +53,5 @@ public class SymbolTable {
     public Collection<LinguisticVariable> getLinguisticVariables() {
         return Collections.unmodifiableCollection(this.symbols.values());
     }
+
 }

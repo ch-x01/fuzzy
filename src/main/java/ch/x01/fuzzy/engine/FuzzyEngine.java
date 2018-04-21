@@ -3,6 +3,7 @@ package ch.x01.fuzzy.engine;
 import ch.x01.fuzzy.parser.RuleParser;
 import ch.x01.fuzzy.parser.SymbolTable;
 
+// TODO clean up
 public class FuzzyEngine {
 
     private final static String NEW_LINE = System.getProperty("line.separator");

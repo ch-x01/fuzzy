@@ -52,19 +52,6 @@ public class FuzzyRule {
         this.symbolTable = symbolTable;
     }
 
-    // TODO clean up
-    //    /**
-    //     * Factory method to construct a rule by parsing its rule text.
-    //     *
-    //     * @param ruleText the rule text
-    //     * @param engine   the fuzzy engine hosting the rule
-    //     * @return fuzzy rule
-    //     */
-    //    public static FuzzyRule parse(String ruleText, FuzzyEngine engine) {
-    //        FuzzyRule fuzzyRule = new FuzzyRule(ruleText, engine.getSymbolTable());
-    //        engine.getRuleParser().parse(fuzzyRule);
-    //        return fuzzyRule;
-    //    }
 
     /**
      * Computes degree of relevance of this rule.
