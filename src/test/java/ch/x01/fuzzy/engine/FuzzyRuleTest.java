@@ -5,6 +5,7 @@ import ch.x01.fuzzy.parser.SymbolTable;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class FuzzyRuleTest {
@@ -47,14 +48,14 @@ public class FuzzyRuleTest {
         assertTrue(rule2.getStatus() == FuzzyRuleStatus.DONE && rule2.getParsingError().equals("n/a"));
 
         // set a crisp input value for carSpeed
-        carSpeed.setInputValue(70.0);
+        carSpeed.setValue(70.0);
 
         // compute degree of relevance (H)
         double h1 = rule1.computeDegreeOfRelevance();
         double h2 = rule2.computeDegreeOfRelevance();
 
-        assertTrue(h1 == 0.75);
-        assertTrue(h2 == 0.25);
+        assertEquals(0.75, h1, 0.01);
+        assertEquals(0.25, h2, 0.01);
 
     }
 
@@ -98,15 +99,15 @@ public class FuzzyRuleTest {
         assertTrue(rule2.getStatus() == FuzzyRuleStatus.DONE && rule2.getParsingError().equals("n/a"));
 
         // set crisp input values
-        x1.setInputValue(0.65);
-        x2.setInputValue(0.1);
+        x1.setValue(0.65);
+        x2.setValue(0.1);
 
         // compute degree of relevance
         double h1 = rule1.computeDegreeOfRelevance();
         double h2 = rule2.computeDegreeOfRelevance();
 
-        assertTrue(h1 == 0.2);
-        assertTrue(h2 == 0.8);
+        assertEquals(0.2, h1, 0.01);
+        assertEquals(0.8, h2, 0.01);
 
     }
 

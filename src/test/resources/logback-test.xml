@@ -9,7 +9,7 @@
         </encoder>
     </appender>
 
-    <logger name="ch.x01" level="info"/>
+    <logger name="ch.x01" level="debug"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>

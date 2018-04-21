@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class LinguisticVariableTest {
 
@@ -37,30 +37,29 @@ public class LinguisticVariableTest {
 
     @Test
     public final void testIs() {
-        this.carSpeed.setInputValue(70);
+        this.carSpeed.setValue(70);
         double fuzzy = this.carSpeed.is("low");
-        assertTrue(fuzzy == 0.75);
+        assertEquals(0.75, fuzzy, 0.01);
         fuzzy = this.carSpeed.is("medium");
-        assertTrue(fuzzy == 0.25);
+        assertEquals(0.25, fuzzy, 0.01);
 
-        this.brakeForce.setInputValue(60);
+        this.brakeForce.setValue(60);
         fuzzy = this.brakeForce.is("moderate");
-        assertTrue(fuzzy == 1.0);
+        assertEquals(1.0, fuzzy, 0.01);
         fuzzy = this.brakeForce.is("strong");
-        assertTrue(fuzzy == 0.0);
+        assertEquals(0.0, fuzzy, 0.1);
 
-        this.brakeForce.setInputValue(70);
+        this.brakeForce.setValue(70);
         fuzzy = this.brakeForce.is("moderate");
-        assertTrue(fuzzy == 0.5);
+        assertEquals(0.5, fuzzy, 0.01);
         fuzzy = this.brakeForce.is("strong");
-        assertTrue(fuzzy == 0.0);
+        assertEquals(0.0, fuzzy, 0.01);
     }
 
     @Test(expected = FuzzyEngineException.class)
     public final void testIsUndefinedTerm() {
-        this.carSpeed.setInputValue(120);
-        double fuzzy = this.carSpeed.is("fast");
-        assertTrue(fuzzy == -1);
+        this.carSpeed.setValue(120);
+        this.carSpeed.is("fast");
     }
 
 }

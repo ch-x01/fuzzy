@@ -29,15 +29,15 @@ public class FuzzyEngine {
         ruleParser = new RuleParser(symbolTable);
     }
 
-    public InputVariable addInputVariable(String name) {
-        inputVariable = new LinguisticVariable(name, symbolTable);
-        return inputVariable;
-    }
-
-    public OutputVariable addOutputVariable(String name) {
-        outputVariable = new LinguisticVariable(name, symbolTable);
-        return outputVariable;
-    }
+//    public InputVariable addInputVariable(String name) {
+//        inputVariable = new LinguisticVariable(name, symbolTable);
+//        return inputVariable;
+//    }
+//
+//    public OutputVariable addOutputVariable(String name) {
+//        outputVariable = new LinguisticVariable(name, symbolTable);
+//        return outputVariable;
+//    }
 
     public FuzzyRuleSet addRuleSet() {
         fuzzyRuleSet = new FuzzyRuleSet();

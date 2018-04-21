@@ -11,7 +11,7 @@ public class FuzzyModelTest {
 
     @Test
     public void testFuzzyModelCarTriangle() {
-        FuzzyModel model = model().name("car driver (triangle)")
+        FuzzyModel model = model().name("car (triangle)")
                                   .vars(lv().usage("input")
                                             .name("carSpeed")
                                             .terms(triangle().name("low")
@@ -40,7 +40,7 @@ public class FuzzyModelTest {
 
     @Test
     public void testFuzzyModelCarTrapezoid() {
-        FuzzyModel model = model().name("car driver (trapezoid)")
+        FuzzyModel model = model().name("car (trapezoid)")
                                   .vars(lv().usage("input")
                                             .name("carSpeed")
                                             .terms(trapezoid().name("low")
@@ -72,8 +72,8 @@ public class FuzzyModelTest {
     }
 
     @Test
-    public void testFuzzyModelAmbientLight() {
-        FuzzyModel model = model().name("ambient light")
+    public void testFuzzyModelDimmer() {
+        FuzzyModel model = model().name("dimmer")
                                   .vars(lv().usage("input")
                                             .name("ambient")
                                             .terms(triangle().name("dark")

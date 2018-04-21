@@ -6,12 +6,16 @@ import ch.x01.fuzzy.engine.LinguisticVariable;
 import ch.x01.fuzzy.engine.MembershipFunction;
 import ch.x01.fuzzy.parser.RuleParser;
 import ch.x01.fuzzy.parser.SymbolTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 public class FuzzyEngine {
+
+    private static final Logger logger = LoggerFactory.getLogger(FuzzyEngine.class);
 
     private final FuzzyModel model;
     private final int numOfSteps;
@@ -29,6 +33,9 @@ public class FuzzyEngine {
     }
 
     public OutputVariable evaluate(InputVariable... input) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluating " + model.toString());
+        }
 
         SymbolTable symbolTable = new SymbolTable();
 
@@ -47,6 +54,9 @@ public class FuzzyEngine {
                             "Cannot register linguistic variable \"%s\" with symbol table because the variable is registered already.",
                             lv.getName()));
                 }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Created linguistic variable " + lv.toString());
+                }
             }
 
             // create rules
@@ -59,8 +69,7 @@ public class FuzzyEngine {
 
             // parse rules
             RuleParser parser = new RuleParser(symbolTable);
-            fuzzyRules.parallelStream()
-                      .forEach(parser::parse);
+            fuzzyRules.forEach(parser::parse);
 
             isReady = true;
         }
@@ -71,7 +80,7 @@ public class FuzzyEngine {
         for (InputVariable var : input) {
             if (model.isValidInputVariable(var.name)) {
                 LinguisticVariable lv = symbolTable.getLV(var.name);
-                lv.setInputValue(var.value);
+                lv.setValue(var.value);
             } else {
                 throw new FuzzyEngineException(String.format("\"%s\" is not a valid input variable.", var.name));
             }
@@ -88,10 +97,15 @@ public class FuzzyEngine {
         double[][] superposition = MembershipFunction.computeSuperposition(conclusions.toArray(cs), numOfSteps);
 
         // defuzzify using center of mass approach
-        double outputValue = MembershipFunction.computeCenterOfMass(superposition);
+        double CoM = MembershipFunction.computeCenterOfMass(superposition);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("--- defuzzification");
+            logger.debug("x = " + CoM);
+        }
 
         // set output value
-        return new OutputVariable(model.getOutputVariableName(), outputValue);
+        return new OutputVariable(model.getOutputVariableName(), CoM);
     }
 
     public static class InputVariable {
@@ -102,6 +116,22 @@ public class FuzzyEngine {
             this.name = name;
             this.value = value;
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return "InputVariable{" +
+                    "name='" + name + '\'' +
+                    ", value=" + value +
+                    '}';
+        }
     }
 
     public static class OutputVariable {
@@ -111,6 +141,22 @@ public class FuzzyEngine {
         private OutputVariable(String name, double value) {
             this.name = name;
             this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return "OutputVariable{" +
+                    "name='" + name + '\'' +
+                    ", value=" + value +
+                    '}';
         }
     }
 

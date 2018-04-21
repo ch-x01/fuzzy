@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+// TODO clean up
 public class FuzzyRuleSet {
 
     private static final Logger logger = LoggerFactory.getLogger(FuzzyRuleSet.class);

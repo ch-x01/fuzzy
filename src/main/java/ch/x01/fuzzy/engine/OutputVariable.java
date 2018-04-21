@@ -1,5 +1,6 @@
 package ch.x01.fuzzy.engine;
 
+// TODO clean up
 public interface OutputVariable {
 
     /**

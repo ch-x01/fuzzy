@@ -19,7 +19,7 @@ public class SymbolTable {
      */
     public boolean registerLV(LinguisticVariable v) {
         boolean result = false;
-        if (!this.symbols.containsKey(v.getName())) {
+        if (!this.symbols.containsKey(v.getName().toLowerCase())) {
             this.symbols.put(v.getName(), v);
             result = true;
         }

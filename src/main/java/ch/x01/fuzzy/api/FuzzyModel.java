@@ -59,7 +59,7 @@ public class FuzzyModel {
     public boolean isValidInputVariable(String name) {
         List<LinguisticVariable> variableList = Arrays.stream(vars)
                                                       .filter(var -> (var.getName()
-                                                                         .equalsIgnoreCase(name) && "usage".equals(var.getUsage())))
+                                                                         .equalsIgnoreCase(name) && "input".equals(var.getUsage())))
                                                       .collect(Collectors.toList());
         return variableList.size() == 1;
     }

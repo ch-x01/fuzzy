@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+// TODO clean up
 public class FuzzyRuleSetTest {
 
     private SymbolTable symbolTable;
@@ -60,10 +61,10 @@ public class FuzzyRuleSetTest {
         assertEquals(ruleSet.getStatus(), FuzzyRuleStatus.DONE);
 
         // set a crisp input value for carSpeed
-        carSpeed.setInputValue(70.0);
+//        carSpeed.setInputValue(70.0);
 
         System.out.println("--- crisp input value for carSpeed");
-        System.out.println("value = " + carSpeed.getInputValue());
+//        System.out.println("value = " + carSpeed.getInputValue());
 
         // evaluate rules
         double result = ruleSet.evaluateRules();
