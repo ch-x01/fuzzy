@@ -104,7 +104,7 @@ public class LinguisticVariable {
         if (!this.termSet.containsKey(term)) {
             this.termSet.put(term, mf);
         } else {
-            throw new FuzzyEngineException(String.format(
+            throw new RuntimeException(String.format(
                     "Cannot add linguistic term \"%s\" because it is already a member of the term set of linguistic variable \"%s\".",
                     term, this.name));
         }
@@ -125,7 +125,7 @@ public class LinguisticVariable {
             MembershipFunction mf = this.termSet.get(term);
             result = mf.fuzzify(this.value);
         } else {
-            throw new FuzzyEngineException(String.format(
+            throw new RuntimeException(String.format(
                     "Cannot compute fuzzification for linguistic term \"%s\" because it is not a member of the term set of linguistic variable \"%s\".",
                     term, this.name));
         }
@@ -146,7 +146,7 @@ public class LinguisticVariable {
         if (this.termSet.containsKey(term)) {
             mf = this.termSet.get(term);
         } else {
-            throw new FuzzyEngineException(
+            throw new RuntimeException(
                     String.format(
                             "Cannot retrieve membership function because linguistic term \"%s\" is not a member of the term set of linguistic variable \"%s\".",
                             term, this.name));

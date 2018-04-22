@@ -1,6 +1,5 @@
 package ch.x01.fuzzy.api;
 
-import ch.x01.fuzzy.core.FuzzyEngineException;
 import ch.x01.fuzzy.core.FuzzyRule;
 import ch.x01.fuzzy.core.LinguisticVariable;
 import ch.x01.fuzzy.core.MembershipFunction;
@@ -55,7 +54,7 @@ public class FuzzyEngine {
                                new MembershipFunction(term.getStart(), term.getLeft_top(), term.getRight_top(), term.getEnd()));
                 }
                 if (!symbolTable.registerLV(lv)) {
-                    throw new FuzzyEngineException(String.format(
+                    throw new RuntimeException(String.format(
                             "Cannot register linguistic variable \"%s\" with symbol table because the variable is registered already.",
                             lv.getName()));
                 }
@@ -67,7 +66,7 @@ public class FuzzyEngine {
             // create rules
             for (String rule : model.getRules()) {
                 if (!fuzzyRules.add(new FuzzyRule(rule, symbolTable))) {
-                    throw new FuzzyEngineException(
+                    throw new RuntimeException(
                             String.format("Cannot add rule \"%s\" to the rule set because it is present already.", rule));
                 }
             }
@@ -87,7 +86,7 @@ public class FuzzyEngine {
                 LinguisticVariable lv = symbolTable.getLV(var.name);
                 lv.setValue(var.value);
             } else {
-                throw new FuzzyEngineException(String.format("\"%s\" is not a valid input variable.", var.name));
+                throw new RuntimeException(String.format("\"%s\" is not a valid input variable.", var.name));
             }
         }
 

@@ -56,7 +56,7 @@ public class LinguisticVariableTest {
         assertEquals(0.0, fuzzy, 0.01);
     }
 
-    @Test(expected = FuzzyEngineException.class)
+    @Test(expected = RuntimeException.class)
     public final void testIsUndefinedTerm() {
         this.carSpeed.setValue(120);
         this.carSpeed.is("fast");

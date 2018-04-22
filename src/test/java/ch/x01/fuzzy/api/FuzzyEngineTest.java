@@ -2,7 +2,6 @@ package ch.x01.fuzzy.api;
 
 import ch.x01.fuzzy.api.FuzzyEngine.InputVariable;
 import ch.x01.fuzzy.api.FuzzyEngine.OutputVariable;
-import ch.x01.fuzzy.core.FuzzyEngineException;
 import org.junit.Test;
 
 import static ch.x01.fuzzy.api.FuzzyModel.LinguisticVariable.lv;
@@ -137,7 +136,7 @@ public class FuzzyEngineTest {
         System.out.println(output);
     }
 
-    @Test(expected = FuzzyEngineException.class)
+    @Test(expected = RuntimeException.class)
     public void testCarInvalidModel() {
 
         FuzzyModel model = model().name("car")

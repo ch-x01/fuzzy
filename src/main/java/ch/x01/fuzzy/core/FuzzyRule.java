@@ -70,7 +70,7 @@ public class FuzzyRule {
         double result;
 
         if (status != FuzzyRuleStatus.DONE) {
-            throw new FuzzyEngineException(
+            throw new RuntimeException(
                     String.format("Cannot compute degree of relevance of rule \"%s\" because its status is \"%s\".", ruleText,
                                   status));
         }
@@ -125,7 +125,7 @@ public class FuzzyRule {
         MembershipFunction result;
 
         if (status != FuzzyRuleStatus.DONE) {
-            throw new FuzzyEngineException(String.format("Cannot compute conclusion of rule \"%s\" because its status is \"%s\".",
+            throw new RuntimeException(String.format("Cannot compute conclusion of rule \"%s\" because its status is \"%s\".",
                                                          ruleText, status));
         }
 
