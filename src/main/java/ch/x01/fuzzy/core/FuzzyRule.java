@@ -71,8 +71,8 @@ public class FuzzyRule {
 
         if (status != FuzzyRuleStatus.DONE) {
             throw new RuntimeException(
-                    String.format("Cannot compute degree of relevance of rule \"%s\" because its status is \"%s\".", ruleText,
-                                  status));
+                    String.format("Cannot compute degree of relevance of rule \"%s\" because its status is \"%s\". %s", ruleText,
+                                  status, parsingError));
         }
 
         Stack<Double> stack = new Stack<>();

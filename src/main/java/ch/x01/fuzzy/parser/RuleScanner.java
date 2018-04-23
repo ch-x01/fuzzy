@@ -5,11 +5,10 @@ import java.util.LinkedList;
 public class RuleScanner {
 
     private static final char SP = '\u0020';  // Space
-    //private static final char NUL = '\u0000'; // Null
     private static final char STX = '\u0002'; // Start of Text
     private static final char ETX = '\u0003'; // End of Text
     private static final char[] LETTERS = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '_'};
     private static final char[] NUMBERS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     private final char[] expression;
@@ -20,7 +19,9 @@ public class RuleScanner {
     private int index;
 
     public RuleScanner(String expression) {
-        this.expression = expression.trim().toLowerCase().toCharArray();
+        this.expression = expression.trim()
+                                    .toLowerCase()
+                                    .toCharArray();
         currentState = new Starting();
     }
 
