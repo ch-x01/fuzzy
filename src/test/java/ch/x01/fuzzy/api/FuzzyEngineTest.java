@@ -323,39 +323,24 @@ public class FuzzyEngineTest {
         FuzzyModel model = model().name("tip")
                                   .vars(lv().usage("input")
                                             .name("service")
-                                            .terms(trapezoid().name("miserable")
-                                                              .start(-4)
-                                                              .left_top(-2)
-                                                              .right_top(0)
-                                                              .end(2),
-                                                   trapezoid().name("poor")
+                                            .terms(trapezoid().name("poor")
                                                               .start(0)
                                                               .left_top(2)
                                                               .right_top(4)
                                                               .end(6),
-                                                   trapezoid().name("okay")
+                                                   trapezoid().name("good")
                                                               .start(4)
                                                               .left_top(6)
                                                               .right_top(8)
                                                               .end(10),
-                                                   trapezoid().name("good")
+                                                   trapezoid().name("excellent")
                                                               .start(8)
                                                               .left_top(10)
                                                               .right_top(12)
-                                                              .end(14),
-                                                   trapezoid().name("excellent")
-                                                              .start(12)
-                                                              .left_top(14)
-                                                              .right_top(16)
-                                                              .end(18)),
+                                                              .end(14)),
                                         lv().usage("input")
                                             .name("food")
                                             .terms(trapezoid().name("rancid")
-                                                              .start(-4)
-                                                              .left_top(-2)
-                                                              .right_top(0)
-                                                              .end(2),
-                                                   trapezoid().name("okay")
                                                               .start(0)
                                                               .left_top(2)
                                                               .right_top(4)
@@ -365,24 +350,14 @@ public class FuzzyEngineTest {
                                                               .left_top(6)
                                                               .right_top(8)
                                                               .end(10),
-                                                   trapezoid().name("very_tasty")
+                                                   trapezoid().name("delicious")
                                                               .start(8)
                                                               .left_top(10)
                                                               .right_top(12)
-                                                              .end(14),
-                                                   trapezoid().name("delicious")
-                                                              .start(12)
-                                                              .left_top(14)
-                                                              .right_top(16)
-                                                              .end(18)),
+                                                              .end(14)),
                                         lv().usage("output")
                                             .name("tip")
-                                            .terms(trapezoid().name("no_tip")
-                                                              .start(-4)
-                                                              .left_top(-2)
-                                                              .right_top(0)
-                                                              .end(2),
-                                                   trapezoid().name("poor")
+                                            .terms(trapezoid().name("poor")
                                                               .start(0)
                                                               .left_top(2)
                                                               .right_top(4)
@@ -392,52 +367,115 @@ public class FuzzyEngineTest {
                                                               .left_top(6)
                                                               .right_top(8)
                                                               .end(10),
-                                                   trapezoid().name("good")
+                                                   trapezoid().name("generous")
                                                               .start(8)
                                                               .left_top(10)
                                                               .right_top(12)
-                                                              .end(14),
-                                                   trapezoid().name("generous")
-                                                              .start(12)
-                                                              .left_top(14)
-                                                              .right_top(16)
-                                                              .end(18)))
-                                  .rules("if service is miserable or food is rancid then tip is no_tip",
-                                         "if service is poor and food is okay then tip is no_tip",
-                                         "if service is good and food is tasty then tip is average",
-                                         "if service is excellent and food is delicious then tip is generous",
-                                         "if service is okay and food is very_tasty then tip is good");
+                                                              .end(14)))
+                                  .rules("if (food is rancid or service is poor) then tip is poor",
+                                         "if (food is tasty and service is good) then tip is average",
+                                         "if (food is tasty and service is excellent) then tip is generous",
+                                         "if (food is delicious and service is good) then tip is average",
+                                         "if (food is delicious and service is excellent) then tip is generous"
+                                  );
 
         FuzzyEngine engine = new FuzzyEngine(model);
 
-        // good service and tasty food
-        OutputVariable output = engine.evaluate(new InputVariable("service", 7), new InputVariable("food", 7));
+        // rancid food, poor service
+        OutputVariable output = engine.evaluate(new InputVariable("food", 3), new InputVariable("service", 3));
+        assertEquals(3, output.getValue(), 0.01);
+        System.out.println(output);
+
+        // tasty food, good service
+        output = engine.evaluate(new InputVariable("food", 7), new InputVariable("service", 7));
         assertEquals(7, output.getValue(), 0.01);
         System.out.println(output);
 
-        // good service and delicious food
-        output = engine.evaluate(new InputVariable("service", 11), new InputVariable("food", 15));
-        assertEquals(15, output.getValue(), 0.01);
+        // tasty food, excellent service
+        output = engine.evaluate(new InputVariable("food", 7), new InputVariable("service", 11));
+        assertEquals(11, output.getValue(), 0.01);
         System.out.println(output);
 
-        // excellent service and delicious food
-        output = engine.evaluate(new InputVariable("service", 15), new InputVariable("food", 15));
-        assertEquals(15, output.getValue(), 0.01);
+        // delicious food, good service
+        output = engine.evaluate(new InputVariable("food", 11), new InputVariable("service", 7));
+        assertEquals(7, output.getValue(), 0.01);
         System.out.println(output);
 
-        // excellent service but rancid food
-        output = engine.evaluate(new InputVariable("service", 15), new InputVariable("food", -1));
-        assertEquals(-1, output.getValue(), 0.01);
+        // delicious food, excellent service
+        output = engine.evaluate(new InputVariable("food", 11), new InputVariable("service", 11));
+        assertEquals(11, output.getValue(), 0.01);
         System.out.println(output);
 
-        // poor service and ok food
-        output = engine.evaluate(new InputVariable("service", 3), new InputVariable("food", 3));
-        assertEquals(-1, output.getValue(), 0.01);
-        System.out.println(output);
+    }
 
-        // good service and very tasty food
-        output = engine.evaluate(new InputVariable("service", 11), new InputVariable("food", 9));
-        assertEquals(9, output.getValue(), 0.01);
+    @Test
+    public void testTipBug() {
+
+        // AND or OR are evaluated correct within brackets only
+        FuzzyModel model = model().name("tip")
+                                  .vars(lv().usage("input")
+                                            .name("service")
+                                            .terms(trapezoid().name("poor")
+                                                              .start(0)
+                                                              .left_top(2)
+                                                              .right_top(4)
+                                                              .end(6),
+                                                   trapezoid().name("good")
+                                                              .start(4)
+                                                              .left_top(6)
+                                                              .right_top(8)
+                                                              .end(10),
+                                                   trapezoid().name("excellent")
+                                                              .start(8)
+                                                              .left_top(10)
+                                                              .right_top(12)
+                                                              .end(14)),
+                                        lv().usage("input")
+                                            .name("food")
+                                            .terms(trapezoid().name("rancid")
+                                                              .start(0)
+                                                              .left_top(2)
+                                                              .right_top(4)
+                                                              .end(6),
+                                                   trapezoid().name("tasty")
+                                                              .start(4)
+                                                              .left_top(6)
+                                                              .right_top(8)
+                                                              .end(10),
+                                                   trapezoid().name("delicious")
+                                                              .start(8)
+                                                              .left_top(10)
+                                                              .right_top(12)
+                                                              .end(14)),
+                                        lv().usage("output")
+                                            .name("tip")
+                                            .terms(trapezoid().name("poor")
+                                                              .start(0)
+                                                              .left_top(2)
+                                                              .right_top(4)
+                                                              .end(6),
+                                                   trapezoid().name("average")
+                                                              .start(4)
+                                                              .left_top(6)
+                                                              .right_top(8)
+                                                              .end(10),
+                                                   trapezoid().name("generous")
+                                                              .start(8)
+                                                              .left_top(10)
+                                                              .right_top(12)
+                                                              .end(14)))
+                                  .rules("if (food is rancid or service is poor) then tip is poor",
+                                         "if (food is tasty and service is good) then tip is average",
+                                         "if (food is tasty and service is excellent) then tip is generous",
+                                         "if (food is delicious and service is good) then tip is average",
+                                         "if (food is delicious and service is excellent) then tip is generous"
+                                  );
+
+        FuzzyEngine engine = new FuzzyEngine(model);
+
+        // rancid food, good service
+        OutputVariable output = engine.evaluate(new InputVariable("food", 3), new InputVariable("service", 7));
+        assertEquals(3, output.getValue(), 0.01);
         System.out.println(output);
 
     }
