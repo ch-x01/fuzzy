@@ -13,7 +13,7 @@ public class LinguisticVariableTest {
     private LinguisticVariable brakeForce;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         SymbolTable symbolTable = new SymbolTable();
 
         // define linguistic variable 'car speed'
@@ -32,7 +32,7 @@ public class LinguisticVariableTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     @Test

@@ -6,14 +6,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 public class FuzzyRuleTest {
 
     private SymbolTable symbolTable;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         symbolTable = new SymbolTable();
     }
 
@@ -44,8 +44,12 @@ public class FuzzyRuleTest {
         RuleParser parser = new RuleParser(symbolTable);
         parser.parse(rule1);
         parser.parse(rule2);
-        assertTrue(rule1.getStatus() == FuzzyRuleStatus.DONE && rule1.getParsingError().equals("n/a"));
-        assertTrue(rule2.getStatus() == FuzzyRuleStatus.DONE && rule2.getParsingError().equals("n/a"));
+
+        assertSame(FuzzyRuleStatus.DONE, rule1.getStatus());
+        assertEquals("n/a", rule1.getParsingError());
+
+        assertSame(FuzzyRuleStatus.DONE, rule2.getStatus());
+        assertEquals("n/a", rule2.getParsingError());
 
         // set a crisp input value for carSpeed
         carSpeed.setValue(70.0);
@@ -95,8 +99,12 @@ public class FuzzyRuleTest {
         RuleParser parser = new RuleParser(symbolTable);
         parser.parse(rule1);
         parser.parse(rule2);
-        assertTrue(rule1.getStatus() == FuzzyRuleStatus.DONE && rule1.getParsingError().equals("n/a"));
-        assertTrue(rule2.getStatus() == FuzzyRuleStatus.DONE && rule2.getParsingError().equals("n/a"));
+
+        assertSame(FuzzyRuleStatus.DONE, rule1.getStatus());
+        assertEquals("n/a", rule1.getParsingError());
+
+        assertSame(FuzzyRuleStatus.DONE, rule2.getStatus());
+        assertEquals("n/a", rule2.getParsingError());
 
         // set crisp input values
         x1.setValue(0.65);

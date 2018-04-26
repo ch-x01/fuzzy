@@ -29,13 +29,13 @@ public class MembershipFunctionTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         this.trapezoid = new MembershipFunction(0.0, 1.0, 3.0, 4.0);
         this.triangle = new MembershipFunction(2.0, 5.0, 8.0);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         this.trapezoid = null;
         this.triangle = null;
     }
