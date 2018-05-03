@@ -68,8 +68,6 @@ If you would like to compute output values for a range of input values then do t
             OutputVariable output = engine.evaluate(input);
             System.out.println(engine.printResult(input, output, 6, 2));
         }
-
-    }
 ```
 
 
