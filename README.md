@@ -1,5 +1,7 @@
 ## Fuzzy Logic Engine [![Build Status](https://travis-ci.org/ch-x01/fuzzy.svg?branch=master)](https://travis-ci.org/ch-x01/fuzzy)
-A simple and lightweight fuzzy logic engine written in Java and published under the MIT licence, notably without utilising any third party libraries. Currently, the binary size of the JAR file is **less than 40 KB**.
+A simple and lightweight fuzzy logic engine written in Java 8 and published under the MIT licence, notably without utilising any third party libraries. Currently, the binary size of the JAR file is **less than 40 KB**.
+
+The engine provides a convenient fluent API that lets you model the reference system in a easy way.
 
 ### Features
 **Controller Type** Mamdani
@@ -12,7 +14,6 @@ A simple and lightweight fuzzy logic engine written in Java and published under 
 
 ### Example
 ```java
-public class FuzzyEngineTest {
     /**
      * A simple reference system is given, which models the brake behaviour of a car driver
      * depending on the car speed. The inference machine should determine the brake force for a
@@ -21,44 +22,56 @@ public class FuzzyEngineTest {
      */
     @Test
     public void testCar() {
-        FuzzyEngine engine = new FuzzyEngine();
 
-        // define input variable 'car speed'
-        InputVariable carSpeed = engine.addInputVariable("carSpeed");
-        carSpeed.addTerm("low", new MembershipFunction(20, 60, 100));
-        carSpeed.addTerm("medium", new MembershipFunction(60, 100, 140));
+        FuzzyModel model = model().name("car")
+                                  .vars(lv().usage("input")
+                                            .name("carSpeed")
+                                            .terms(triangle().name("low")
+                                                             .start(20)
+                                                             .top(60)
+                                                             .end(100),
+                                                   triangle().name("medium")
+                                                             .start(60)
+                                                             .top(100)
+                                                             .end(140)),
+                                        lv().usage("output")
+                                            .name("brakeForce")
+                                            .terms(triangle().name("moderate")
+                                                             .start(40)
+                                                             .top(60)
+                                                             .end(80),
+                                                   triangle().name("strong")
+                                                             .start(70)
+                                                             .top(85)
+                                                             .end(100)))
+                                  .rules("if carSpeed is low then brakeForce is moderate",
+                                         "if carSpeed is medium then brakeForce is strong");
 
-        // define output variable 'brake force'
-        OutputVariable brakeForce = engine.addOutputVariable("brakeForce");
-        brakeForce.addTerm("moderate", new MembershipFunction(40, 60, 80));
-        brakeForce.addTerm("strong", new MembershipFunction(70, 85, 100));
+        FuzzyEngine engine = new FuzzyEngine(model);
 
-        // define rules
-        FuzzyRuleSet ruleSet = engine.addRuleSet();
-        ruleSet.addRule(FuzzyRule.parse("if carSpeed is low then brakeForce is moderate", engine));
-        ruleSet.addRule(FuzzyRule.parse("if carSpeed is medium then brakeForce is strong", engine));
-
-        // set a crisp input value for carSpeed
-        carSpeed.setInputValue(70);
-
-        // evaluate rules
-        engine.evaluateRules();
-
-        // print status info
-        System.out.println(engine.toString());
+        OutputVariable output = engine.evaluate(new InputVariable("carSpeed", 70));
 
         // test output value
-        assertEquals(65.9939, brakeForce.getOutputValue(), 0.01);
+        assertEquals(65.9939, output.getValue(), 0.01);
 
-        // compute output values for a range of input values
+        System.out.println(output);
+
+    }
+
+```
+If you would like to compute output values for a range of input values then do the following
+
+```java
         for (int i = 0; i < 50; ++i) {
             double speed = 20 + i * (120.0 / 50);
-            engine.evaluateRules(speed);
-            System.out.println(engine.getResult());
+            InputVariable input = new InputVariable("carSpeed", speed);
+            OutputVariable output = engine.evaluate(input);
+            System.out.println(engine.printResult(input, output, 6, 2));
         }
+
     }
- }
 ```
+
 
 ### Build
 To build the project with Maven from the command line go to the directory `fuzzy` and run 

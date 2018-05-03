@@ -1,4 +1,4 @@
-package ch.x01.fuzzy.engine;
+package ch.x01.fuzzy.core;
 
 import ch.x01.fuzzy.parser.SymbolTable;
 import org.slf4j.Logger;
@@ -20,15 +20,22 @@ import java.util.Objects;
  * Each linguistic term is associated with a reference fuzzy set, each of which has a defined
  * membership function (MF).
  */
-public class LinguisticVariable implements InputVariable, OutputVariable {
+public class LinguisticVariable {
 
     private static final Logger logger = LoggerFactory.getLogger(LinguisticVariable.class);
 
     private final String name;
     private final Map<String, MembershipFunction> termSet = new HashMap<>();
+    private double value;
 
-    private double inputValue;
-    private double outputValue;
+    /**
+     * Constructs a linguistic variable. The constructed variable needs to be registered with the symbol table.
+     *
+     * @param name the name of this linguistic variable
+     */
+    public LinguisticVariable(String name) {
+        this.name = name.toLowerCase();
+    }
 
     /**
      * Constructs a linguistic variable and registers it with the symbol table.
@@ -66,50 +73,23 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     }
 
     /**
-     * Returns the computed output value for this linguistic variable.
-     * <p>
-     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
-     * </p>
+     * Returns the current crisp value for this linguistic variable.
      *
-     * @return output value
+     * @return current value
      */
-    public double getOutputValue() {
-        return outputValue;
+    public double getValue() {
+        return this.value;
     }
 
     /**
-     * Sets a crisp output value for this linguistic variable.
-     * <p>
-     * Note: Only applicable if this linguistic variable is part of a rule's conclusion.
-     * </p>
+     * Sets a crisp value for this linguistic variable.
      *
-     * @param value the output value
+     * @param value the value
      */
-    public void setOutputValue(double value) {
-        this.outputValue = value;
+    public void setValue(double value) {
+        this.value = value;
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Set crisp output value = %.4f for linguistic variable \"%s\".", this.outputValue, this.name));
-        }
-    }
-
-    /**
-     * Returns the current crisp input value for this linguistic variable.
-     *
-     * @return current input value
-     */
-    public double getInputValue() {
-        return this.inputValue;
-    }
-
-    /**
-     * Sets a crisp input value for this linguistic variable.
-     *
-     * @param value the input value
-     */
-    public void setInputValue(double value) {
-        this.inputValue = value;
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Set crisp input value = %.4f for linguistic variable \"%s\".", this.inputValue, this.name));
+            logger.debug(String.format("Set crisp value = %.4f for linguistic variable \"%s\".", this.value, this.name));
         }
     }
 
@@ -124,7 +104,7 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
         if (!this.termSet.containsKey(term)) {
             this.termSet.put(term, mf);
         } else {
-            logger.warn(String.format(
+            throw new RuntimeException(String.format(
                     "Cannot add linguistic term \"%s\" because it is already a member of the term set of linguistic variable \"%s\".",
                     term, this.name));
         }
@@ -143,9 +123,9 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
         String term = name.toLowerCase();
         if (this.termSet.containsKey(term)) {
             MembershipFunction mf = this.termSet.get(term);
-            result = mf.fuzzify(this.inputValue);
+            result = mf.fuzzify(this.value);
         } else {
-            throw new FuzzyEngineException(String.format(
+            throw new RuntimeException(String.format(
                     "Cannot compute fuzzification for linguistic term \"%s\" because it is not a member of the term set of linguistic variable \"%s\".",
                     term, this.name));
         }
@@ -166,7 +146,7 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
         if (this.termSet.containsKey(term)) {
             mf = this.termSet.get(term);
         } else {
-            throw new FuzzyEngineException(
+            throw new RuntimeException(
                     String.format(
                             "Cannot retrieve membership function because linguistic term \"%s\" is not a member of the term set of linguistic variable \"%s\".",
                             term, this.name));
@@ -183,7 +163,8 @@ public class LinguisticVariable implements InputVariable, OutputVariable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        for (Iterator<String> it = this.termSet.keySet().iterator(); it.hasNext(); ) {
+        for (Iterator<String> it = this.termSet.keySet()
+                                               .iterator(); it.hasNext(); ) {
             builder.append(it.next());
             if (it.hasNext()) {
                 builder.append(", ");

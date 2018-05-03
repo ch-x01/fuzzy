@@ -1,6 +1,6 @@
 package ch.x01.fuzzy.parser;
 
-import ch.x01.fuzzy.engine.LinguisticVariable;
+import ch.x01.fuzzy.core.LinguisticVariable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +19,7 @@ public class SymbolTable {
      */
     public boolean registerLV(LinguisticVariable v) {
         boolean result = false;
-        if (!this.symbols.containsKey(v.getName())) {
+        if (!this.symbols.containsKey(v.getName().toLowerCase())) {
             this.symbols.put(v.getName(), v);
             result = true;
         }
@@ -53,4 +53,5 @@ public class SymbolTable {
     public Collection<LinguisticVariable> getLinguisticVariables() {
         return Collections.unmodifiableCollection(this.symbols.values());
     }
+
 }

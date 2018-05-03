@@ -1,4 +1,4 @@
-package ch.x01.fuzzy.engine;
+package ch.x01.fuzzy.core;
 
 /**
  * The rule's parsing status, that is, whether the rule was parsed or not, whether the parsing

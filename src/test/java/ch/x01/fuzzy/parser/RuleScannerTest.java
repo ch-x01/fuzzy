@@ -2,7 +2,7 @@ package ch.x01.fuzzy.parser;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class RuleScannerTest {
 
@@ -26,16 +26,16 @@ public class RuleScannerTest {
     public void testNextToken() {
         RuleScanner scanner = new RuleScanner("if carSpeed is low then brakeForce is moderate");
         try {
-            assertTrue(Token.START.equals(scanner.nextToken()));
-            assertTrue(Token.IF.equals(scanner.nextToken()));
-            assertTrue(Token.IDENT.equals(scanner.nextToken()));
-            assertTrue(Token.IS.equals(scanner.nextToken()));
-            assertTrue(Token.IDENT.equals(scanner.nextToken()));
-            assertTrue(Token.THEN.equals(scanner.nextToken()));
-            assertTrue(Token.IDENT.equals(scanner.nextToken()));
-            assertTrue(Token.IS.equals(scanner.nextToken()));
-            assertTrue(Token.IDENT.equals(scanner.nextToken()));
-            assertTrue(Token.END.equals(scanner.nextToken()));
+            assertEquals(Token.START, scanner.nextToken());
+            assertEquals(Token.IF, scanner.nextToken());
+            assertEquals(Token.IDENT, scanner.nextToken());
+            assertEquals(Token.IS, scanner.nextToken());
+            assertEquals(Token.IDENT, scanner.nextToken());
+            assertEquals(Token.THEN, scanner.nextToken());
+            assertEquals(Token.IDENT, scanner.nextToken());
+            assertEquals(Token.IS, scanner.nextToken());
+            assertEquals(Token.IDENT, scanner.nextToken());
+            assertEquals(Token.END, scanner.nextToken());
         } catch (IllegalNameException e) {
             e.printStackTrace();
         }

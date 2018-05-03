@@ -1,4 +1,4 @@
-package ch.x01.fuzzy.engine;
+package ch.x01.fuzzy.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public class MembershipFunction {
         double[][] result = new double[2][numOfSteps + 1];
 
         if (membershipFunctions.length < 2) {
-            throw new FuzzyEngineException("Cannot compute superposition for less than two membership functions.");
+            throw new RuntimeException("Cannot compute superposition for less than two membership functions.");
         }
 
         double minSupport = 0.0;
@@ -203,7 +203,7 @@ public class MembershipFunction {
         MembershipFunction result;
 
         if (this.height != 1) {
-            throw new FuzzyEngineException(
+            throw new RuntimeException(
                     String.format("Cannot compute reasoning because the membership function %s was reasoned already", this.toString()));
         }
 

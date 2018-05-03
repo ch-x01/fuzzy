@@ -1,7 +1,7 @@
 package ch.x01.fuzzy.parser;
 
-import ch.x01.fuzzy.engine.FuzzyRule;
-import ch.x01.fuzzy.engine.FuzzyRuleStatus;
+import ch.x01.fuzzy.core.FuzzyRule;
+import ch.x01.fuzzy.core.FuzzyRuleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
