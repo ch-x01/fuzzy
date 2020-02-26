@@ -69,7 +69,7 @@ If you would like to compute output values for a range of input values then do t
             System.out.println(engine.printResult(input, output, 6, 2));
         }
 ```
-
+See also examples in `fuzzy/src/test/java/ch/x01/fuzzy/api/FuzzyEngineTest.java` 
 
 ### Build
 To build the project with Maven from the command line go to the directory `fuzzy` and run 
