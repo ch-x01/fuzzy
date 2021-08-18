@@ -1,4 +1,4 @@
-## Fuzzy Logic Engine [![Build Status](https://travis-ci.org/ch-x01/fuzzy.svg?branch=master)](https://travis-ci.org/ch-x01/fuzzy)
+## Fuzzy Logic Engine [![Build Status](https://travis-ci.com/ch-x01/fuzzy.svg?branch=master)](https://travis-ci.com/ch-x01/fuzzy)
 A simple and lightweight fuzzy logic engine written in Java 8 and published under the MIT licence, notably without utilising any third party libraries. Currently, the binary size of the JAR file is **approximately 45 KB**.
 
 The engine provides a convenient fluent API that lets you model the reference system in a easy way.
